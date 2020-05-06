@@ -42,9 +42,9 @@ struct H_s{
 
 void E_from_H(E_s &E, H_s &H){
 
-  for(int i=0; i < E.N_x; i++){
-    for(int j=0; j < E.N_y; j++){
-      for(int k=0; k < E.N_z; k++){
+  for(int i=1; i < E.N_x-1; i++){
+    for(int j=1; j < E.N_y-1; j++){
+      for(int k=1; k < E.N_z-1; k++){
 
         E.E_x(i,j,k) = E.E_x(i,j,k) +
             (H.H_z(i,j+1,k) - H.H_z(i,j,k))
@@ -57,13 +57,9 @@ void E_from_H(E_s &E, H_s &H){
         E.E_z(i-1,j,k+1) = E.E_z(i-1,j,k+1) +
             (H.H_y(i,j,k+1) - H.H_y(i-1,j,k+1))
           - (H.H_x(i-1,j+1,k+1) - H.H_x(i-1,j,k+1));
-
-
       }
     }
   }
-
-
 
 }
 
