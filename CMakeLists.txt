@@ -12,7 +12,7 @@ find_package(MPI REQUIRED)
 
 include_directories(${PYTHON_INCLUDE_DIRS} ${numpydir})
 
-# set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(
