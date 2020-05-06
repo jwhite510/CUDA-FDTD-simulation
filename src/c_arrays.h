@@ -73,6 +73,11 @@ class array2d{
       inline T& operator() (int index_0, int index_1, int index_2) {
         return data[index_0*size_1*size_2 + index_1*size_2+ index_2];
       }
+      void init(T value){
+        for(int i=0; i < length; i++){
+          data[i]=value;
+        }
+      }
 
   };
 float max(const array2d<float> & arr)
