@@ -92,6 +92,7 @@ if __name__ == "__main__":
     P["dy"] = 50e-9;
     P["dz"] = 50e-9;
     P["dt"] = (50e-9)/2*c;
+    # P["dt"] *= 0.01
 
     # make gaussiain
     _x = np.linspace(-1,1,N_x+1).reshape(-1,1)
@@ -103,19 +104,33 @@ if __name__ == "__main__":
     # plt.show()
 
     t=0.0
+    a=None
     for _ in range(300):
         t+=P["dt"]
-        J["J_x"][:,:,1]=np.cos(t)*gaussian
+        print("np.cos(t) =>", np.cos(t))
 
-        # plt.figure(1)
-        # plt.pcolormesh(J["J_x"][:,:,1])
+        J["J_x"][:,:,:]=np.cos(t)*np.expand_dims(gaussian,2)
+
+        print("np.max(J['J_x'][:,:,1]) =>", np.max(J['J_x'][:,:,1]))
+
+        plt.figure(1)
+
+        # image = j["j_x"][:,:,1]
+        image = H["H_z"][:,:,1]
+        if(not a):
+            im = plt.imshow(image)
+            colorbar=plt.colorbar()
+            a=10
+        else:
+            im.set_clim(vmin=np.min(image), vmax=np.max(image))
+            im.set_data(image)
+            plt.pause(0.5)
+
+        # plt.figure(2)
+        # # plt.pcolormesh(E["E_x"][:,:,1])
+        # plt.pcolormesh(H["H_z"][:,:,1])
+        # # plt.colorbar()
         # plt.pause(0.01)
-
-        plt.figure(2)
-        # plt.pcolormesh(E["E_x"][:,:,1])
-        plt.pcolormesh(H["H_z"][:,:,1])
-        # plt.colorbar()
-        plt.pause(0.01)
 
         # print(E["E_x"])
 
