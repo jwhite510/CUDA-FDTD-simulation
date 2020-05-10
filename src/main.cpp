@@ -69,16 +69,11 @@ int main()
       
       for (int i=1;i<GridLength-2;i++)
           for (int j=1;j<GridLength-2;j++)
-              for (int k=1;k<GridLength-2;k++)
-                  E.x(i,j,k)=E.x(i,j,k)+E.C*(H.z(i,j,k)-H.z(i,j-1,k))-E.C*(H.y(i,j,k)-H.y(i,j,k-1));
-      for (int i=1;i<GridLength-2;i++)
-          for (int j=1;j<GridLength-2;j++)
-              for (int k=1;k<GridLength-2;k++)
-                  E.y(i,j,k)=E.y(i,j,k)+E.C*(H.x(i,j,k)-H.x(i,j,k-1))-E.C*(H.z(i,j,k)-H.z(i-1,j,k));
-      for (int i=1;i<GridLength-2;i++)
-          for (int j=1;j<GridLength-2;j++)
-              for (int k=1;k<GridLength-2;k++)
-                  E.z(i,j,k)=E.z(i,j,k)+E.C*(H.y(i,j,k)-H.y(i-1,j,k))-E.C*(H.x(i,j,k)-H.x(i,j-1,k));
+              for (int k=1;k<GridLength-2;k++) {
+                E.x(i,j,k)=E.x(i,j,k)+E.C*(H.z(i,j,k)-H.z(i,j-1,k))-E.C*(H.y(i,j,k)-H.y(i,j,k-1));
+                E.y(i,j,k)=E.y(i,j,k)+E.C*(H.x(i,j,k)-H.x(i,j,k-1))-E.C*(H.z(i,j,k)-H.z(i-1,j,k));
+                E.z(i,j,k)=E.z(i,j,k)+E.C*(H.y(i,j,k)-H.y(i-1,j,k))-E.C*(H.x(i,j,k)-H.x(i,j-1,k));
+              }
 
       for(int i=1; i < GridLength-2; i++)
         for(int j=1; j < GridLength-2; j++)
@@ -90,22 +85,16 @@ int main()
 
       for (int i=0;i<GridLength-2;i++)
           for (int j=0;j<GridLength-2;j++)
-              for (int k=0;k<GridLength-2;k++)
-                  H.x(i,j,k)=H.x(i,j,k)+H.C*(E.y(i,j,k+1)-E.y(i,j,k))-H.C*(E.z(i,j+1,k)-E.z(i,j,k));
-
-      for (int i=0;i<GridLength-2;i++)
-          for (int j=0;j<GridLength-2;j++)
-              for (int k=0;k<GridLength-2;k++)
-                  H.y(i,j,k)=H.y(i,j,k)+H.C*(E.z(i+1,j,k)-E.z(i,j,k))-H.C*(E.x(i,j,k+1)-E.x(i,j,k));
-
-      for (int i=0;i<GridLength-2;i++)
-          for (int j=0;j<GridLength-2;j++)
-              for (int k=0;k<GridLength-2;k++)
-                  H.z(i,j,k)=H.z(i,j,k)+H.C*(E.x(i,j+1,k)-E.x(i,j,k))-H.C*(E.y(i+1,j,k)-E.y(i,j,k));
+              for (int k=0;k<GridLength-2;k++) {
+                H.x(i,j,k)=H.x(i,j,k)+H.C*(E.y(i,j,k+1)-E.y(i,j,k))-H.C*(E.z(i,j+1,k)-E.z(i,j,k));
+                H.y(i,j,k)=H.y(i,j,k)+H.C*(E.z(i+1,j,k)-E.z(i,j,k))-H.C*(E.x(i,j,k+1)-E.x(i,j,k));
+                H.z(i,j,k)=H.z(i,j,k)+H.C*(E.x(i,j+1,k)-E.x(i,j,k))-H.C*(E.y(i+1,j,k)-E.y(i,j,k));
+              }
 
       // Python.call_function_np("plotgaussian", gaussian.data, vector<int>{gaussian.size_0,gaussian.size_1,gaussian.size_2}, PyArray_FLOAT64);
       // Python.call_function_np("plot", E.z.data, vector<int>{E.z.size_0,E.z.size_1,H.z.size_2}, PyArray_FLOAT64);
-      if(n>10){
+      cout << "n => " << n << endl;
+      if(n>100){
         Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
         Python.call("show");
       }
