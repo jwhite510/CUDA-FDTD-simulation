@@ -66,38 +66,39 @@ int main()
   // Python.call_function_np("plotgaussian", J.z.data, vector<int>{J.z.size_0,J.z.size_1,J.z.size_2}, PyArray_FLOAT64);
   // exit(0);
   for(int n=0; n < tmax_steps; n++){
-      
-      for (int i=1;i<GridLength-2;i++)
-          for (int j=1;j<GridLength-2;j++)
-              for (int k=1;k<GridLength-2;k++) {
-                E.x(i,j,k)=E.x(i,j,k)+E.C*(H.z(i,j,k)-H.z(i,j-1,k))-E.C*(H.y(i,j,k)-H.y(i,j,k-1));
-                E.y(i,j,k)=E.y(i,j,k)+E.C*(H.x(i,j,k)-H.x(i,j,k-1))-E.C*(H.z(i,j,k)-H.z(i-1,j,k));
-                E.z(i,j,k)=E.z(i,j,k)+E.C*(H.y(i,j,k)-H.y(i-1,j,k))-E.C*(H.x(i,j,k)-H.x(i,j-1,k));
-              }
 
-      for(int i=1; i < GridLength-2; i++)
-        for(int j=1; j < GridLength-2; j++)
-          for(int k=1; k < GridLength-2; k++){
-            E.x(i,j,k) = E.x(i,j,k) - J.C*J.x(i,j,k)*cos(omega*n*dt-3*tau)*exp(-(pow(n*dt-3*tau,2))/pow((tau),2));
-            E.y(i,j,k) = E.y(i,j,k) - J.C*J.y(i,j,k)*cos(omega*n*dt-3*tau)*exp(-(pow(n*dt-3*tau,2))/pow((tau),2));
-            E.z(i,j,k) = E.z(i,j,k) - J.C*J.z(i,j,k)*cos(omega*n*dt-3*tau)*exp(-(pow(n*dt-3*tau,2))/pow((tau),2));
-          }
+    for (int i=1;i<GridLength-2;i++)
+      for (int j=1;j<GridLength-2;j++)
+        for (int k=1;k<GridLength-2;k++) {
+          // electric field
+          E.x(i,j,k)=E.x(i,j,k)+E.C*(H.z(i,j,k)-H.z(i,j-1,k))-E.C*(H.y(i,j,k)-H.y(i,j,k-1));
+          E.y(i,j,k)=E.y(i,j,k)+E.C*(H.x(i,j,k)-H.x(i,j,k-1))-E.C*(H.z(i,j,k)-H.z(i-1,j,k));
+          E.z(i,j,k)=E.z(i,j,k)+E.C*(H.y(i,j,k)-H.y(i-1,j,k))-E.C*(H.x(i,j,k)-H.x(i,j-1,k));
 
-      for (int i=0;i<GridLength-2;i++)
-          for (int j=0;j<GridLength-2;j++)
-              for (int k=0;k<GridLength-2;k++) {
-                H.x(i,j,k)=H.x(i,j,k)+H.C*(E.y(i,j,k+1)-E.y(i,j,k))-H.C*(E.z(i,j+1,k)-E.z(i,j,k));
-                H.y(i,j,k)=H.y(i,j,k)+H.C*(E.z(i+1,j,k)-E.z(i,j,k))-H.C*(E.x(i,j,k+1)-E.x(i,j,k));
-                H.z(i,j,k)=H.z(i,j,k)+H.C*(E.x(i,j+1,k)-E.x(i,j,k))-H.C*(E.y(i+1,j,k)-E.y(i,j,k));
-              }
+          // source
+          // E.x(i,j,k) = E.x(i,j,k) - J.C*J.x(i,j,k)*cos(omega*n*dt)*exp(-(pow(n*dt-3*tau,2))/pow((tau),2));
+          // E.y(i,j,k) = E.y(i,j,k) - J.C*J.y(i,j,k)*cos(omega*n*dt)*exp(-(pow(n*dt-3*tau,2))/pow((tau),2));
+          // E.z(i,j,k) = E.z(i,j,k) - J.C*J.z(i,j,k)*cos(omega*n*dt)*exp(-(pow(n*dt-3*tau,2))/pow((tau),2));
+
+          E.x(i,j,k) = E.x(i,j,k) - J.C*J.x(i,j,k)*cos(omega*n*dt);
+          E.y(i,j,k) = E.y(i,j,k) - J.C*J.y(i,j,k)*cos(omega*n*dt);
+          E.z(i,j,k) = E.z(i,j,k) - J.C*J.z(i,j,k)*cos(omega*n*dt);
+
+        }
+    for (int i=1;i<GridLength-2;i++)
+      for (int j=1;j<GridLength-2;j++)
+        for (int k=1;k<GridLength-2;k++) {
+          // update magnetic field
+          H.x(i,j,k)=H.x(i,j,k)+H.C*(E.y(i,j,k+1)-E.y(i,j,k))-H.C*(E.z(i,j+1,k)-E.z(i,j,k));
+          H.y(i,j,k)=H.y(i,j,k)+H.C*(E.z(i+1,j,k)-E.z(i,j,k))-H.C*(E.x(i,j,k+1)-E.x(i,j,k));
+          H.z(i,j,k)=H.z(i,j,k)+H.C*(E.x(i,j+1,k)-E.x(i,j,k))-H.C*(E.y(i+1,j,k)-E.y(i,j,k));
+        }
 
       // Python.call_function_np("plotgaussian", gaussian.data, vector<int>{gaussian.size_0,gaussian.size_1,gaussian.size_2}, PyArray_FLOAT64);
       // Python.call_function_np("plot", E.z.data, vector<int>{E.z.size_0,E.z.size_1,H.z.size_2}, PyArray_FLOAT64);
       cout << "n => " << n << endl;
-      if(n>100){
-        Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
-        Python.call("show");
-      }
+      Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
+      Python.call("show");
 
   }
 
