@@ -33,47 +33,6 @@ void MakeGaussian(array2d<double> &gaussian){
     }
   }
 }
-struct E_s{
-  array3d<double> E_x;
-  array3d<double> E_y;
-  array3d<double> E_z;
-  int N_x;
-  int N_y;
-  int N_z;
-  E_s(int N_x, int N_y, int N_z):
-    N_x(N_x),
-    N_y(N_y),
-    N_z(N_z),
-    E_x(N_x,N_y+1,N_z+1),
-    E_y(N_x+1,N_y,N_z+1),
-    E_z(N_x+1,N_y+1,N_z)
-  {
-    E_x.init(0);
-    E_y.init(0);
-    E_z.init(0);
-  }
-};
-struct H_s{
-  array3d<double> H_x;
-  array3d<double> H_y;
-  array3d<double> H_z;
-  int N_x;
-  int N_y;
-  int N_z;
-  H_s(int N_x, int N_y, int N_z):
-    N_x(N_x),
-    N_y(N_y),
-    N_z(N_z),
-    H_x(N_x+1,N_y,N_z),
-    H_y(N_x,N_y+1,N_z),
-    H_z(N_x,N_y,N_z+1)
-    {
-      H_x.init(0);
-      H_y.init(0);
-      H_z.init(0);
-    }
-};
-
 struct Params{
   double dt;
   double eps0;
@@ -82,29 +41,29 @@ struct Params{
   double dx;
   double dz;
 };
-struct J_s{
-  array3d<double> J_x;
-  array3d<double> J_y;
-  array3d<double> J_z;
+struct Tensor{
+  array3d<double> x;
+  array3d<double> y;
+  array3d<double> z;
   int N_x;
   int N_y;
   int N_z;
-  J_s(int N_x, int N_y, int N_z):
+  Tensor(int N_x, int N_y, int N_z):
     N_x(N_x),
     N_y(N_y),
     N_z(N_z),
-    J_x(N_x+1,N_y,N_z),
-    J_y(N_x,N_y+1,N_z),
-    J_z(N_x,N_y,N_z+1)
+    x(N_x,N_y,N_z),
+    y(N_x,N_y,N_z),
+    z(N_x,N_y,N_z)
     {
-      J_x.init(0);
-      J_y.init(0);
-      J_z.init(0);
+      x.init(0);
+      y.init(0);
+      z.init(0);
     }
 
 };
 
-void E_from_H(E_s &E, H_s &H, J_s &J, Params &P){
+void E_from_H(Tensor &E, Tensor &H, Tensor &J, Params &P){
 
   for(int i=1; i < E.N_x-1; i++){
     for(int j=1; j < E.N_y-1; j++){
@@ -113,36 +72,36 @@ void E_from_H(E_s &E, H_s &H, J_s &J, Params &P){
         double Ec = (1/P.eps0)*(P.dt/P.dx);
         double Jc = (1/P.eps0)*P.dt;
 
-        E.E_x(i,j,k) = E.E_x(i,j,k) +
+        E.x(i,j,k) = E.x(i,j,k) +
           Ec*(
-            (H.H_z(i,j,k) - H.H_z(i,j,k))
-          - (H.H_y(i,j,k) - H.H_y(i,j,k))
+            (H.z(i,j,k) - H.z(i,j,k))
+          - (H.y(i,j,k) - H.y(i,j,k))
           );
-        E.E_x(i,j,k) -= Jc*J.J_x(i,j,k);
+        E.x(i,j,k) -= Jc*J.x(i,j,k);
 
-        E.E_y(i-1,j+1,k) = E.E_y(i-1,j+1,k) +
+        E.y(i-1,j+1,k) = E.y(i-1,j+1,k) +
           Ec*(
-            (H.H_x(i-1,j+1,k+1) - H.H_x(i-1,j+1,k))
-          - (H.H_z(i,j+1,k) - H.H_z(i-1,j+1,k))
+            (H.x(i-1,j+1,k+1) - H.x(i-1,j+1,k))
+          - (H.z(i,j+1,k) - H.z(i-1,j+1,k))
           );
-        E.E_y(i-1,j+1,k) -= Jc*J.J_y(i-1,j+1,k);
+        E.y(i-1,j+1,k) -= Jc*J.y(i-1,j+1,k);
 
-        E.E_z(i-1,j,k+1) = E.E_z(i-1,j,k+1) +
+        E.z(i-1,j,k+1) = E.z(i-1,j,k+1) +
           Ec*(
-            (H.H_y(i,j,k+1) - H.H_y(i-1,j,k+1))
-          - (H.H_x(i-1,j+1,k+1) - H.H_x(i-1,j,k+1))
+            (H.y(i,j,k+1) - H.y(i-1,j,k+1))
+          - (H.x(i-1,j+1,k+1) - H.x(i-1,j,k+1))
           );
-        E.E_z(i-1,j,k+1) -= Jc*J.J_z(i-1,j,k+1);
+        E.z(i-1,j,k+1) -= Jc*J.z(i-1,j,k+1);
 
-        double jvalx = (P.dt/P.eps0)*J.J_x(i,j,k);
-        double jvaly = (P.dt/P.eps0)*J.J_y(i,j,k);
-        double jvalz = (P.dt/P.eps0)*J.J_z(i,j,k);
+        double jvalx = (P.dt/P.eps0)*J.x(i,j,k);
+        double jvaly = (P.dt/P.eps0)*J.y(i,j,k);
+        double jvalz = (P.dt/P.eps0)*J.z(i,j,k);
 
       }
     }
   }
 }
-void H_from_E(H_s &H, E_s &E, Params &P){
+void H_from_E(Tensor &H, Tensor &E, Params &P){
 
   double Hc = (1/P.mu0)*(P.dt/P.dx);
 
@@ -150,22 +109,22 @@ void H_from_E(H_s &H, E_s &E, Params &P){
     for(int j=1; j < E.N_y-1; j++){
       for(int k=1; k < E.N_z-1; k++){
 
-        H.H_x(i-1,j+1,k+1) = H.H_x(i-1,j+1,k+1) +
+        H.x(i-1,j+1,k+1) = H.x(i-1,j+1,k+1) +
           Hc*(
-            ((E.E_y(i-1,j+1,k+1) - E.E_y(i-1,j+1,k)))
-          - ((E.E_z(i-1,j+1,k+1) - E.E_z(i-1,j,k+1)))
+            ((E.y(i-1,j+1,k+1) - E.y(i-1,j+1,k)))
+          - ((E.z(i-1,j+1,k+1) - E.z(i-1,j,k+1)))
           );
 
-        H.H_y(i,j,k+1) = H.H_y(i,j,k+1) +
+        H.y(i,j,k+1) = H.y(i,j,k+1) +
           Hc*(
-            ((E.E_z(i,j,k+1) - E.E_z(i-1,j,k+1)))
-          - ((E.E_x(i,j,k+1) - E.E_x(i,j,k)))
+            ((E.z(i,j,k+1) - E.z(i-1,j,k+1)))
+          - ((E.x(i,j,k+1) - E.x(i,j,k)))
           );
 
-        H.H_z(i,j+1,k) = H.H_z(i,j+1,k) +
+        H.z(i,j+1,k) = H.z(i,j+1,k) +
           Hc*(
-            ((E.E_x(i,j+1,k) - E.E_x(i,j,k)))
-          - ((E.E_y(i,j+1,k) - E.E_y(i-1,j+1,k)))
+            ((E.x(i,j+1,k) - E.x(i,j,k)))
+          - ((E.y(i,j+1,k) - E.y(i-1,j+1,k)))
           );
       }
     }
@@ -179,9 +138,9 @@ int main()
   int N_y = 100;
   int N_z = 100;
 
-  E_s E(N_x, N_y, N_z);
-  H_s H(N_x, N_y, N_z);
-  J_s J(N_x, N_y, N_z);
+  Tensor E(N_x, N_y, N_z);
+  Tensor H(N_x, N_y, N_z);
+  Tensor J(N_x, N_y, N_z);
 
   double c=2.998e8;
   Params P;
@@ -203,22 +162,22 @@ int main()
   for(int i=0;i<300;i++){
     t+=P.dt;
 
-    for(int i=0; i < J.J_x.size_0; i++){
-      for(int j=0; j < J.J_x.size_1; j++){
-        for(int k=0; k < J.J_x.size_2; k++){
-          // J.J_z(i,j,k) = cos(omega*t)*gaussian(i,j);
-          J.J_z(i,j,k)=cos(omega*t)*exp(-(pow(i-50,2)/2))*exp(-(pow(j-50,2)/2))*exp(-(pow(k-50,2)/2));
+    for(int i=0; i < J.x.size_0; i++){
+      for(int j=0; j < J.x.size_1; j++){
+        for(int k=0; k < J.x.size_2; k++){
+          // J.z(i,j,k) = cos(omega*t)*gaussian(i,j);
+          J.z(i,j,k)=cos(omega*t)*exp(-(pow(i-50,2)/2))*exp(-(pow(j-50,2)/2))*exp(-(pow(k-50,2)/2));
         }
       }
     }
     cout << "t => " << t << endl;
-    // Python.call_function_np("plot", J.J_z.data, vector<int>{J.J_z.size_0,J.J_z.size_1,H.H_z.size_2}, PyArray_FLOAT64);
+    // Python.call_function_np("plot", J.z.data, vector<int>{J.z.size_0,J.z.size_1,H.z.size_2}, PyArray_FLOAT64);
 
     E_from_H(E, H, J, P);
     H_from_E(H, E, P);
 
 
-    Python.call_function_np("plot", H.H_x.data, vector<int>{H.H_x.size_0,H.H_x.size_1,H.H_x.size_2}, PyArray_FLOAT64);
+    Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
     Python.call("show");
 
   }
