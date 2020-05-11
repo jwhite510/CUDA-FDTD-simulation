@@ -65,37 +65,45 @@ struct Tensor{
 
 void E_from_H(Tensor &E, Tensor &H, Tensor &J, Params &P){
 
-  for(int i=1; i < E.N_x-1; i++){
-    for(int j=1; j < E.N_y-1; j++){
-      for(int k=1; k < E.N_z-1; k++){
+  for(int i=1; i < E.N_x-2; i++){
+    for(int j=1; j < E.N_y-2; j++){
+      for(int k=1; k < E.N_z-2; k++){
 
         double Ec = (1/P.eps0)*(P.dt/P.dx);
         double Jc = (1/P.eps0)*P.dt;
 
-        E.x(i,j,k) = E.x(i,j,k) +
-          Ec*(
-            (H.z(i,j,k) - H.z(i,j,k))
-          - (H.y(i,j,k) - H.y(i,j,k))
-          );
-        E.x(i,j,k) -= Jc*J.x(i,j,k);
+        E.x(i,j,k)=E.x(i,j,k)+Ec*(H.z(i,j,k)-H.z(i,j-1,k))-Ec*(H.y(i,j,k)-H.y(i,j,k-1));
+        E.y(i,j,k)=E.y(i,j,k)+Ec*(H.x(i,j,k)-H.x(i,j,k-1))-Ec*(H.z(i,j,k)-H.z(i-1,j,k));
+        E.z(i,j,k)=E.z(i,j,k)+Ec*(H.y(i,j,k)-H.y(i-1,j,k))-Ec*(H.x(i,j,k)-H.x(i,j-1,k));
 
-        E.y(i-1,j+1,k) = E.y(i-1,j+1,k) +
-          Ec*(
-            (H.x(i-1,j+1,k+1) - H.x(i-1,j+1,k))
-          - (H.z(i,j+1,k) - H.z(i-1,j+1,k))
-          );
-        E.y(i-1,j+1,k) -= Jc*J.y(i-1,j+1,k);
+        E.x(i,j,k) = E.x(i,j,k) - Jc*J.x(i,j,k);
+        E.y(i,j,k) = E.y(i,j,k) - Jc*J.y(i,j,k);
+        E.z(i,j,k) = E.z(i,j,k) - Jc*J.z(i,j,k);
 
-        E.z(i-1,j,k+1) = E.z(i-1,j,k+1) +
-          Ec*(
-            (H.y(i,j,k+1) - H.y(i-1,j,k+1))
-          - (H.x(i-1,j+1,k+1) - H.x(i-1,j,k+1))
-          );
-        E.z(i-1,j,k+1) -= Jc*J.z(i-1,j,k+1);
+        // E.x(i,j,k) = E.x(i,j,k) +
+        //   Ec*(
+        //     (H.z(i,j,k) - H.z(i,j-1,k))
+        //   - (H.y(i,j,k) - H.y(i,j,k-1))
+        //   );
+        // E.x(i,j,k) -= Jc*J.x(i,j,k);
 
-        double jvalx = (P.dt/P.eps0)*J.x(i,j,k);
-        double jvaly = (P.dt/P.eps0)*J.y(i,j,k);
-        double jvalz = (P.dt/P.eps0)*J.z(i,j,k);
+        // E.y(i-1,j+1,k) = E.y(i-1,j+1,k) +
+        //   Ec*(
+        //     (H.x(i,j,k) - H.x(i,j,k-1))
+        //   - (H.z(i,j,k) - H.z(i-1,j,k))
+        //   );
+        // E.y(i,j,k) -= Jc*J.y(i,j,k);
+
+        // E.z(i,j,k) = E.z(i,j,k) +
+        //   Ec*(
+        //     (H.y(i,j,k) - H.y(i-1,j,k))
+        //   - (H.x(i,j,k) - H.x(i,j-1,k+1))
+        //   );
+        // E.z(i,j,k) -= Jc*J.z(i,j,k);
+
+        // double jvalx = (P.dt/P.eps0)*J.x(i,j,k);
+        // double jvaly = (P.dt/P.eps0)*J.y(i,j,k);
+        // double jvalz = (P.dt/P.eps0)*J.z(i,j,k);
 
       }
     }
@@ -105,27 +113,31 @@ void H_from_E(Tensor &H, Tensor &E, Params &P){
 
   double Hc = (1/P.mu0)*(P.dt/P.dx);
 
-  for(int i=1; i < E.N_x-1; i++){
-    for(int j=1; j < E.N_y-1; j++){
-      for(int k=1; k < E.N_z-1; k++){
+  for(int i=1; i < E.N_x-2; i++){
+    for(int j=1; j < E.N_y-2; j++){
+      for(int k=1; k < E.N_z-2; k++){
 
-        H.x(i-1,j+1,k+1) = H.x(i-1,j+1,k+1) +
-          Hc*(
-            ((E.y(i-1,j+1,k+1) - E.y(i-1,j+1,k)))
-          - ((E.z(i-1,j+1,k+1) - E.z(i-1,j,k+1)))
-          );
+        H.x(i,j,k)=H.x(i,j,k)+Hc*(E.y(i,j,k+1)-E.y(i,j,k))-Hc*(E.z(i,j+1,k)-E.z(i,j,k));
+        H.y(i,j,k)=H.y(i,j,k)+Hc*(E.z(i+1,j,k)-E.z(i,j,k))-Hc*(E.x(i,j,k+1)-E.x(i,j,k));
+        H.z(i,j,k)=H.z(i,j,k)+Hc*(E.x(i,j+1,k)-E.x(i,j,k))-Hc*(E.y(i+1,j,k)-E.y(i,j,k));
 
-        H.y(i,j,k+1) = H.y(i,j,k+1) +
-          Hc*(
-            ((E.z(i,j,k+1) - E.z(i-1,j,k+1)))
-          - ((E.x(i,j,k+1) - E.x(i,j,k)))
-          );
+        // H.x(i,j,k) = H.x(i,j,k) +
+        //   Hc*(
+        //     ((E.y(i,j,k+1) - E.y(i,j,k)))
+        //   - ((E.z(i,j+1,k) - E.z(i,j,k)))
+        //   );
 
-        H.z(i,j+1,k) = H.z(i,j+1,k) +
-          Hc*(
-            ((E.x(i,j+1,k) - E.x(i,j,k)))
-          - ((E.y(i,j+1,k) - E.y(i-1,j+1,k)))
-          );
+        // H.y(i,j,k+1) = H.y(i,j,k+1) +
+        //   Hc*(
+        //     ((E.z(i+1,j,k) - E.z(i,j,k)))
+        //   - ((E.x(i,j,k+1) - E.x(i,j,k)))
+        //   );
+
+        // H.z(i,j+1,k) = H.z(i,j+1,k) +
+        //   Hc*(
+        //     ((E.x(i,j+1,k) - E.x(i,j,k)))
+        //   - ((E.y(i+1,j,k) - E.y(i,j,k)))
+        //   );
       }
     }
   }
