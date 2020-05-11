@@ -93,16 +93,17 @@ int main()
   double t=0;
   double Hc = (1/P.mu0)*(P.dt/P.dx);
   double Ec = (1/P.eps0)*(P.dt/P.dx);
+  double time_span=15e-15;
   double Jc = (1/P.eps0)*P.dt;
-  for(int i=0;i<300;i++){
-    t+=P.dt;
+  int tmax_steps=time_span/P.dt;
+
+  for(int n=0; n < tmax_steps; n++){
 
     for(int i=0; i < N_x; i++)
       for(int j=0; j < N_y; j++)
         for(int k=0; k < N_z; k++)
           J.z(i,j,k)=exp(-(pow(i-50,2)/2))*exp(-(pow(j-50,2)/2))*exp(-(pow(k-50,2)/2));
 
-    cout << "t => " << t << endl;
     // Python.call_function_np("plot", J.z.data, vector<int>{J.z.size_0,J.z.size_1,H.z.size_2}, PyArray_FLOAT64);
     for(int i=1; i < E.N_x-2; i++){
       for(int j=1; j < E.N_y-2; j++){
@@ -112,9 +113,9 @@ int main()
           E.y(i,j,k)=E.y(i,j,k)+Ec*(H.x(i,j,k)-H.x(i,j,k-1))-Ec*(H.z(i,j,k)-H.z(i-1,j,k));
           E.z(i,j,k)=E.z(i,j,k)+Ec*(H.y(i,j,k)-H.y(i-1,j,k))-Ec*(H.x(i,j,k)-H.x(i,j-1,k));
 
-          E.x(i,j,k) = E.x(i,j,k) - Jc*J.x(i,j,k)*cos(omega*t);
-          E.y(i,j,k) = E.y(i,j,k) - Jc*J.y(i,j,k)*cos(omega*t);
-          E.z(i,j,k) = E.z(i,j,k) - Jc*J.z(i,j,k)*cos(omega*t);
+          E.x(i,j,k) = E.x(i,j,k) - Jc*J.x(i,j,k)*cos(omega*n*P.dt);
+          E.y(i,j,k) = E.y(i,j,k) - Jc*J.y(i,j,k)*cos(omega*n*P.dt);
+          E.z(i,j,k) = E.z(i,j,k) - Jc*J.z(i,j,k)*cos(omega*n*P.dt);
 
         }
       }
