@@ -110,26 +110,29 @@ void E_from_H(E_s &E, H_s &H, J_s &J, Params &P){
     for(int j=1; j < E.N_y-1; j++){
       for(int k=1; k < E.N_z-1; k++){
 
+        double Ec = (1/P.eps0)*(P.dt/P.dx);
+        double Jc = (1/P.eps0)*P.dt;
+
         E.E_x(i,j,k) = E.E_x(i,j,k) +
-          (P.dt/P.eps0)*(
-            (H.H_z(i,j+1,k) - H.H_z(i,j,k))/P.dy
-          - (H.H_y(i,j,k+1) - H.H_y(i,j,k))/P.dz
-          - J.J_x(i,j,k)
+          Ec*(
+            (H.H_z(i,j,k) - H.H_z(i,j,k))
+          - (H.H_y(i,j,k) - H.H_y(i,j,k))
           );
+        E.E_x(i,j,k) -= Jc*J.J_x(i,j,k);
 
         E.E_y(i-1,j+1,k) = E.E_y(i-1,j+1,k) +
-          (P.dt/P.eps0)*(
-            (H.H_x(i-1,j+1,k+1) - H.H_x(i-1,j+1,k))/P.dz
-          - (H.H_z(i,j+1,k) - H.H_z(i-1,j+1,k))/P.dx
-          -J.J_y(i-1,j+1,k)
+          Ec*(
+            (H.H_x(i-1,j+1,k+1) - H.H_x(i-1,j+1,k))
+          - (H.H_z(i,j+1,k) - H.H_z(i-1,j+1,k))
           );
+        E.E_y(i-1,j+1,k) -= Jc*J.J_y(i-1,j+1,k);
 
         E.E_z(i-1,j,k+1) = E.E_z(i-1,j,k+1) +
-          (P.dt*P.eps0)*(
-            (H.H_y(i,j,k+1) - H.H_y(i-1,j,k+1))/P.dx
-          - (H.H_x(i-1,j+1,k+1) - H.H_x(i-1,j,k+1))/P.dy
-          -J.J_z(i-1,j,k+1)
+          Ec*(
+            (H.H_y(i,j,k+1) - H.H_y(i-1,j,k+1))
+          - (H.H_x(i-1,j+1,k+1) - H.H_x(i-1,j,k+1))
           );
+        E.E_z(i-1,j,k+1) -= Jc*J.J_z(i-1,j,k+1);
 
         double jvalx = (P.dt/P.eps0)*J.J_x(i,j,k);
         double jvaly = (P.dt/P.eps0)*J.J_y(i,j,k);
@@ -141,26 +144,28 @@ void E_from_H(E_s &E, H_s &H, J_s &J, Params &P){
 }
 void H_from_E(H_s &H, E_s &E, Params &P){
 
+  double Hc = (1/P.mu0)*(P.dt/P.dx);
+
   for(int i=1; i < E.N_x-1; i++){
     for(int j=1; j < E.N_y-1; j++){
       for(int k=1; k < E.N_z-1; k++){
 
         H.H_x(i-1,j+1,k+1) = H.H_x(i-1,j+1,k+1) +
-          (P.dt/P.mu0)*(
-            ((E.E_y(i-1,j+1,k+1) - E.E_y(i-1,j+1,k))/P.dz)
-          - ((E.E_z(i-1,j+1,k+1) - E.E_z(i-1,j,k+1))/P.dy)
+          Hc*(
+            ((E.E_y(i-1,j+1,k+1) - E.E_y(i-1,j+1,k)))
+          - ((E.E_z(i-1,j+1,k+1) - E.E_z(i-1,j,k+1)))
           );
 
         H.H_y(i,j,k+1) = H.H_y(i,j,k+1) +
-          (P.dt/P.mu0)*(
-            ((E.E_z(i,j,k+1) - E.E_z(i-1,j,k+1))/P.dx)
-          - ((E.E_x(i,j,k+1) - E.E_x(i,j,k))/P.dz)
+          Hc*(
+            ((E.E_z(i,j,k+1) - E.E_z(i-1,j,k+1)))
+          - ((E.E_x(i,j,k+1) - E.E_x(i,j,k)))
           );
 
         H.H_z(i,j+1,k) = H.H_z(i,j+1,k) +
-          (P.dt/P.mu0)*(
-            ((E.E_x(i,j+1,k) - E.E_x(i,j,k))/P.dy)
-          - ((E.E_y(i,j+1,k) - E.E_y(i-1,j+1,k))/P.dx)
+          Hc*(
+            ((E.E_x(i,j+1,k) - E.E_x(i,j,k)))
+          - ((E.E_y(i,j+1,k) - E.E_y(i-1,j+1,k)))
           );
       }
     }
@@ -201,7 +206,8 @@ int main()
     for(int i=0; i < J.J_x.size_0; i++){
       for(int j=0; j < J.J_x.size_1; j++){
         for(int k=0; k < J.J_x.size_2; k++){
-          J.J_x(i,j,k) = cos(omega*t)*gaussian(i,j);
+          // J.J_z(i,j,k) = cos(omega*t)*gaussian(i,j);
+          J.J_z(i,j,k)=cos(omega*t)*exp(-(pow(i-50,2)/2))*exp(-(pow(j-50,2)/2))*exp(-(pow(k-50,2)/2));
         }
       }
     }
@@ -212,10 +218,8 @@ int main()
     H_from_E(H, E, P);
 
 
-    Python.call_function_np("plot", H.H_z.data, vector<int>{H.H_z.size_0,H.H_z.size_1,H.H_z.size_2}, PyArray_FLOAT64);
+    Python.call_function_np("plot", H.H_x.data, vector<int>{H.H_x.size_0,H.H_x.size_1,H.H_x.size_2}, PyArray_FLOAT64);
     Python.call("show");
-
-    // getchar();
 
   }
 
