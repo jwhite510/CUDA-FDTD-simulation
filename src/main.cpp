@@ -66,43 +66,38 @@ int main()
 {
   std::cout << "hello" << std::endl;
   // make arrays
-  int N_x = 100;
-  int N_y = 100;
-  int N_z = 100;
+  int N_x = 50;
+  int N_y = 50;
+  int N_z = 50;
+
+  double c=2.998e8;
+  double mu0 = 4*M_PI*1e-7;
+  double eps0 = 8.85e-12;
+  double dx = 50e-9;
+  double dt = (50e-9)/(2*c);
+  double freq=500e12;
+  double omega = 2*M_PI*freq;
 
   Tensor E(N_x, N_y, N_z);
   Tensor H(N_x, N_y, N_z);
   Tensor J(N_x, N_y, N_z);
 
-  double c=2.998e8;
-  Params P;
-  P.mu0 = 4*M_PI*10e-7;
-  P.eps0 = 8.85e-12;
-  P.dx = 50e-9;
-  P.dy = 50e-9;
-  P.dz = 50e-9;
-  P.dt = (50e-9)/(2*c);
-  double freq=500e12;
-  double omega = 2*M_PI*freq;
-
   PythonInterp Python("/home/zom/Projects/diffraction_net/venv/", "utility");
 
-  array2d<double> gaussian(N_x+1,N_y);
-  MakeGaussian(gaussian);
-
   double t=0;
-  double Hc = (1/P.mu0)*(P.dt/P.dx);
-  double Ec = (1/P.eps0)*(P.dt/P.dx);
+  double Hc = (1/mu0)*(dt/dx);
+  double Ec = (1/eps0)*(dt/dx);
   double time_span=15e-15;
-  double Jc = (1/P.eps0)*P.dt;
-  int tmax_steps=time_span/P.dt;
+  double Jc = (1/eps0)*dt;
+  int tmax_steps=time_span/dt;
+
+
+  for(int i=0; i < N_x; i++)
+    for(int j=0; j < N_y; j++)
+      for(int k=0; k < N_z; k++)
+        J.z(i,j,k)=exp(-(pow(i-25,2)/2))*exp(-(pow(j-25,2)/2))*exp(-(pow(k-25,2)/2));
 
   for(int n=0; n < tmax_steps; n++){
-
-    for(int i=0; i < N_x; i++)
-      for(int j=0; j < N_y; j++)
-        for(int k=0; k < N_z; k++)
-          J.z(i,j,k)=exp(-(pow(i-50,2)/2))*exp(-(pow(j-50,2)/2))*exp(-(pow(k-50,2)/2));
 
     // Python.call_function_np("plot", J.z.data, vector<int>{J.z.size_0,J.z.size_1,H.z.size_2}, PyArray_FLOAT64);
     for(int i=1; i < E.N_x-2; i++){
@@ -113,9 +108,9 @@ int main()
           E.y(i,j,k)=E.y(i,j,k)+Ec*(H.x(i,j,k)-H.x(i,j,k-1))-Ec*(H.z(i,j,k)-H.z(i-1,j,k));
           E.z(i,j,k)=E.z(i,j,k)+Ec*(H.y(i,j,k)-H.y(i-1,j,k))-Ec*(H.x(i,j,k)-H.x(i,j-1,k));
 
-          E.x(i,j,k) = E.x(i,j,k) - Jc*J.x(i,j,k)*cos(omega*n*P.dt);
-          E.y(i,j,k) = E.y(i,j,k) - Jc*J.y(i,j,k)*cos(omega*n*P.dt);
-          E.z(i,j,k) = E.z(i,j,k) - Jc*J.z(i,j,k)*cos(omega*n*P.dt);
+          E.x(i,j,k) = E.x(i,j,k) - Jc*J.x(i,j,k)*cos(omega*n*dt);
+          E.y(i,j,k) = E.y(i,j,k) - Jc*J.y(i,j,k)*cos(omega*n*dt);
+          E.z(i,j,k) = E.z(i,j,k) - Jc*J.z(i,j,k)*cos(omega*n*dt);
 
         }
       }
@@ -130,10 +125,12 @@ int main()
         }
       }
     }
-
-
+    // Python.call_function_np("plot", E.z.data, vector<int>{E.z.size_0,E.z.size_1,E.z.size_2}, PyArray_FLOAT64);
     Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
-    Python.call("show");
+
+
+    // Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
+    // Python.call("show");
 
   }
 
