@@ -30,9 +30,9 @@ int main()
 {
   std::cout << "hello" << std::endl;
   // make arrays
-  int N_x = 100;
-  int N_y = 100;
-  int N_z = 100;
+  int N_x = 50;
+  int N_y = 50;
+  int N_z = 50;
   int GridLength=N_x;
   array3d<double> eps_rel(N_x, N_y, N_z);
   eps_rel.init(1); // initialize to ones
@@ -60,7 +60,7 @@ int main()
   for(int i=0; i < N_x; i++)
     for(int j=0; j < N_y; j++)
       for(int k=0; k < N_z; k++)
-        J.z(i,j,k)=exp(-(pow(i-50,2)/2))*exp(-(pow(j-50,2)/2))*exp(-(pow(k-50,2)/2));
+        J.z(i,j,k)=exp(-(pow(i-25,2)/2))*exp(-(pow(j-25,2)/2))*exp(-(pow(k-25,2)/2));
 
   PythonInterp Python("/home/zom/Projects/diffraction_net/venv/", "utility");
   // Python.call_function_np("plotgaussian", J.z.data, vector<int>{J.z.size_0,J.z.size_1,J.z.size_2}, PyArray_FLOAT64);
@@ -93,12 +93,14 @@ int main()
           H.y(i,j,k)=H.y(i,j,k)+H.C*(E.z(i+1,j,k)-E.z(i,j,k))-H.C*(E.x(i,j,k+1)-E.x(i,j,k));
           H.z(i,j,k)=H.z(i,j,k)+H.C*(E.x(i,j+1,k)-E.x(i,j,k))-H.C*(E.y(i+1,j,k)-E.y(i,j,k));
         }
+    // Python.call_function_np("plot", E.z.data, vector<int>{E.z.size_0,E.z.size_1,E.z.size_2}, PyArray_FLOAT64);
+    Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
 
       // Python.call_function_np("plotgaussian", gaussian.data, vector<int>{gaussian.size_0,gaussian.size_1,gaussian.size_2}, PyArray_FLOAT64);
       // Python.call_function_np("plot", E.z.data, vector<int>{E.z.size_0,E.z.size_1,H.z.size_2}, PyArray_FLOAT64);
-      cout << "n => " << n << endl;
-      Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
-      Python.call("show");
+      // cout << "n => " << n << endl;
+      // Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
+      // Python.call("show");
 
   }
 

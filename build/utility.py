@@ -2,10 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def plot(a):
+    print("np.shape(a) => ",np.shape(a))
     plt.figure(1)
     plt.cla()
-    plt.pcolormesh(a[:,50,:])
-    print("np.shape(a) => ",np.shape(a))
+    plt.imshow(a[:,:,2])
+    plt.ion()
+    plt.pause(0.5)
+    # print(a)
 
 def plotJX(a):
     plt.figure(2)
