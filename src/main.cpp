@@ -131,23 +131,10 @@ void E_from_H(E_s &E, H_s &H, J_s &J, Params &P){
           -J.J_z(i-1,j,k+1)
           );
 
-        // if(E.E_z(i-1,j,k+1) > 0){
-        //   std::cout << "E_Z is greater than 0" << std::endl;
-        //   std::cout << "E.E_z(i-1,j,k+1)" << " => " << E.E_z(i-1,j,k+1) << std::endl;
-        // }
-        // if(E.E_y(i-1,j+1,k) > 0){
-        //   cout<<"E_Y is greater than 0"<<endl;
-        //   std::cout << "E.E_y(i-1,j+1,k)" << " => " << E.E_y(i-1,j+1,k) << std::endl;
-        // }
-        // if(E.E_x(i,j,k)>0){
-        //   cout<<"E_x is greater than 0"<<endl;
-        //   std::cout << "E.E_x(i,j,k)" << " => " << E.E_x(i,j,k) << std::endl;
-        //   std::cout << "(P.dt/P.eps0)" << " => " << (P.dt/P.eps0) << std::endl;
-        //   // cout << "P.dx => " << P.dx << endl;
-        //   // cout << "P.dy => " << P.dy << endl;
-        //   // cout << "P.dz => " << P.dz << endl;
+        double jvalx = (P.dt/P.eps0)*J.J_x(i,j,k);
+        double jvaly = (P.dt/P.eps0)*J.J_y(i,j,k);
+        double jvalz = (P.dt/P.eps0)*J.J_z(i,j,k);
 
-        // }
       }
     }
   }
@@ -175,32 +162,6 @@ void H_from_E(H_s &H, E_s &E, Params &P){
             ((E.E_x(i,j+1,k) - E.E_x(i,j,k))/P.dy)
           - ((E.E_y(i,j+1,k) - E.E_y(i-1,j+1,k))/P.dx)
           );
-
-        // if(H.H_x(i-1,j+1,k+1)>0){
-        //   cout << "H.H_x(i-1,j+1,k+1) => " << H.H_x(i-1,j+1,k+1) << endl;
-        //   cout << "(P.dt/P.mu0) => " << (P.dt/P.mu0) << endl;
-        //   // cout << "P.dx => " << P.dx << endl;
-        //   // cout << "P.dy => " << P.dy << endl;
-        //   // cout << "P.dz => " << P.dz << endl;
-        // }
-        // if(H.H_y(i,j,k+1)>0){
-        //   cout << "H.H_y(i,j,k+1) => " << H.H_y(i,j,k+1) << endl;
-        //   cout << "(P.dt/P.mu0) => " << (P.dt/P.mu0) << endl;
-        //   // cout << "P.dx => " << P.dx << endl;
-        //   // cout << "P.dy => " << P.dy << endl;
-        //   // cout << "P.dz => " << P.dz << endl;
-        // }
-        // if(H.H_z(i,j+1,k)){
-        //   cout << "H.H_z(i,j+1,k) => " << H.H_z(i,j+1,k) << endl;
-        //   cout << "(P.dt/P.mu0) => " << (P.dt/P.mu0) << endl;
-        //   // cout << "P.dx => " << P.dx << endl;
-        //   // cout << "P.dy => " << P.dy << endl;
-        //   // cout << "P.dz => " << P.dz << endl;
-        // }
-
-
-
-
       }
     }
   }
@@ -209,9 +170,9 @@ int main()
 {
   std::cout << "hello" << std::endl;
   // make arrays
-  int N_x = 201;
-  int N_y = 201;
-  int N_z = 3;
+  int N_x = 100;
+  int N_y = 100;
+  int N_z = 100;
 
   E_s E(N_x, N_y, N_z);
   H_s H(N_x, N_y, N_z);
@@ -224,40 +185,28 @@ int main()
   P.dx = 50e-9;
   P.dy = 50e-9;
   P.dz = 50e-9;
-  P.dt = (50e-9)/2*c;
-
-  // double c=1;
-  // Params P;
-  // P.mu0 = 1;
-  // P.eps0 = 1;
-  // P.dx = 1;
-  // P.dy = 1;
-  // P.dz = 1;
-  // P.dt = 0.1;
+  P.dt = (50e-9)/(2*c);
+  double freq=500e12;
+  double omega = 2*M_PI*freq;
 
   PythonInterp Python("/home/zom/Projects/diffraction_net/venv/", "utility");
 
   array2d<double> gaussian(N_x+1,N_y);
   MakeGaussian(gaussian);
 
-
-  // Python.call_function_np("plotgaussian", gaussian.data, vector<int>{gaussian.size_0,gaussian.size_1}, PyArray_FLOAT64);
-  // exit(0);
-
   double t=0;
   for(int i=0;i<300;i++){
-    t+=P.dt*1e-10;
+    t+=P.dt;
 
-    std::cout << "made it here" << std::endl;
     for(int i=0; i < J.J_x.size_0; i++){
       for(int j=0; j < J.J_x.size_1; j++){
         for(int k=0; k < J.J_x.size_2; k++){
-          // J.J_x(i,j,k) = cos(t)*gaussian(i,j);
-          J.J_x(i,j,k) = 1*gaussian(i,j);
+          J.J_x(i,j,k) = cos(omega*t)*gaussian(i,j);
         }
       }
     }
-    std::cout << "made it here 2" << std::endl;
+    cout << "t => " << t << endl;
+    // Python.call_function_np("plot", J.J_z.data, vector<int>{J.J_z.size_0,J.J_z.size_1,H.H_z.size_2}, PyArray_FLOAT64);
 
     E_from_H(E, H, J, P);
     H_from_E(H, E, P);
