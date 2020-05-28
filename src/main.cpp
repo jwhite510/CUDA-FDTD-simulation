@@ -1,8 +1,9 @@
 #include<iostream>
 #include<vector>
-#include"pythonarrays.h"
 #include"c_arrays.h"
 #include<fstream>
+
+using namespace std;
 
 // void E_from_H()
 
@@ -82,7 +83,6 @@ int main()
   Tensor H(N_x, N_y, N_z);
   Tensor J(N_x, N_y, N_z);
 
-  PythonInterp Python("/home/zom/Projects/diffraction_net/venv/", "utility");
 
   double t=0;
   double Hc = (1/mu0)*(dt/dx);
@@ -125,13 +125,6 @@ int main()
         }
       }
     }
-    // Python.call_function_np("plot", E.z.data, vector<int>{E.z.size_0,E.z.size_1,E.z.size_2}, PyArray_FLOAT64);
-    Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
-
-
-    // Python.call_function_np("plot", H.x.data, vector<int>{H.x.size_0,H.x.size_1,H.x.size_2}, PyArray_FLOAT64);
-    // Python.call("show");
-
   }
 
 

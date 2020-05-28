@@ -1,4 +1,5 @@
 #include <complex>
+using namespace std;
 
 template<class T>
 class array1d{
