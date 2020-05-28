@@ -71,10 +71,21 @@ class array3d{
     int size_1;
     int length;
     int size_2;
+    bool ownspointer=false;
     T* data;
     array3d(int size_0_in, int size_1_in, int size_2_in)
     {
+      ownspointer=true;
       data = new T[size_0_in * size_1_in * size_2_in];
+      size_0 = size_0_in;
+      size_1 = size_1_in;
+      size_2 = size_2_in;
+      length = size_2 * size_1 * size_0;
+    }
+    array3d(int size_0_in, int size_1_in, int size_2_in, T*dp)
+    {
+      ownspointer=false;
+      data = dp;
       size_0 = size_0_in;
       size_1 = size_1_in;
       size_2 = size_2_in;
@@ -82,7 +93,8 @@ class array3d{
     }
     ~array3d()
     {
-      delete [] data;
+      if(ownspointer)
+        delete [] data;
     }
     inline T operator() (int index_0, int index_1, int index_2) const {
       return data[index_0*size_1*size_2 + index_1*size_2+ index_2];

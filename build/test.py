@@ -29,7 +29,26 @@ if __name__=="__main__":
             H.x.ctypes.data_as(c_double_p),H.y.ctypes.data_as(c_double_p),H.z.ctypes.data_as(c_double_p),
             J.x.ctypes.data_as(c_double_p),J.y.ctypes.data_as(c_double_p),J.z.ctypes.data_as(c_double_p)
             )
-    lib.FDTD_PrintInt(a)
-    lib.FDTD_timestep(a)
-    lib.FDTD_PrintInt(a)
+
+    freq=500e12;
+    omega =2*np.pi*freq;
+
+    time_span=15e-15;
+    tmax_steps=int(time_span/dt);
+    plt.figure(1)
+    for n in range(0,tmax_steps):
+
+        for i in range(0,N_x):
+            for j in range(0,N_y):
+                for k in range(0,N_z):
+                    J.z[i,j,k]=np.exp(-(i-25)**2 / 2)*np.exp(-(j-25)**2 / 2)*np.exp(-(k-25)**2 / 2)*np.cos(omega*n*dt)
+
+        lib.FDTD_PrintInt(a)
+        lib.FDTD_timestep(a)
+
+        plt.gca().cla()
+        plt.imshow(H.x[:,:,25])
+        plt.pause(0.1)
+
+        print("time step"+str(i)+" finished")
 

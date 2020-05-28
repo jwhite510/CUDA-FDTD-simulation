@@ -14,6 +14,18 @@ Tensor::Tensor(int N_x, int N_y, int N_z):
   y.init(0);
   z.init(0);
 };
+Tensor::Tensor(int N_x, int N_y, int N_z,double*xp,double*yp,double*zp):
+  N_x(N_x),
+  N_y(N_y),
+  N_z(N_z),
+  x(N_x,N_y,N_z,xp),
+  y(N_x,N_y,N_z,yp),
+  z(N_x,N_y,N_z,zp)
+{
+  x.init(0);
+  y.init(0);
+  z.init(0);
+};
 FDTD::FDTD(int N_x,int N_y,int N_z,double dx,double dt):
     // make arrays
     N_x ( N_x),
@@ -30,6 +42,32 @@ FDTD::FDTD(int N_x,int N_y,int N_z,double dx,double dt):
     J(N_x, N_y, N_z)
   {
   }
+FDTD::FDTD(int N_x,int N_y,int N_z,
+      double dx,double dt,
+      double*Ex,double*Ey,double*Ez,
+      double*Hx,double*Hy,double*Hz,
+      double*Jx,double*Jy,double*Jz
+    ):
+    // make arrays
+    N_x ( N_x),
+    N_y ( N_y),
+    N_z ( N_z),
+    c(2.998e8),
+    mu0 ( 4*M_PI*1e-7),
+    eps0 ( 8.85e-12),
+    Hc ( (1/mu0)*(dt/dx)),
+    Ec ( (1/eps0)*(dt/dx)),
+    Jc ( (1/eps0)*dt),
+    E(N_x, N_y, N_z,
+        Ex,Ey,Ez),
+    H(N_x, N_y, N_z,
+        Hx,Hy,Hz),
+    J(N_x, N_y, N_z,
+        Jx,Jy,Jz)
+  {
+  }
+
+
 void FDTD::timestep(){
   for(int i=1; i < E.N_x-2; i++){
     for(int j=1; j < E.N_y-2; j++){

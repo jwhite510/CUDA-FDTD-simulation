@@ -12,6 +12,8 @@ struct Tensor{
   int N_x;
   int N_y;
   Tensor(int N_x, int N_y, int N_z);
+  Tensor(int N_x, int N_y, int N_z,
+      double*xp,double*yp,double*zp);
   int N_z;
 };
 
@@ -31,5 +33,13 @@ struct FDTD
   double Ec ;
   double Jc ;
   FDTD(int N_x,int N_y,int N_z,double dx,double dt);
+
+  FDTD(int N_x,int N_y,int N_z,
+      double dx,double dt,
+      double*Ex,double*Ey,double*Ez,
+      double*Hx,double*Hy,double*Hz,
+      double*Jx,double*Jy,double*Jz
+      );
+
   void timestep();
 };

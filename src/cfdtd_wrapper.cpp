@@ -12,7 +12,11 @@ extern "C"{
       double*Jx,double*Jy,double*Jz
       )
   {
-    FDTD*fdtd = new FDTD(N_x,N_y,N_z,dx,dt);
+    FDTD*fdtd = new FDTD(N_x,N_y,N_z,dx,dt,
+        Ex,Ey,Ez,
+        Hx,Hy,Hz,
+        Jx,Jy,Jz
+        );
     return (void*)fdtd;
   }
   void FDTD_PrintInt(void*p){
