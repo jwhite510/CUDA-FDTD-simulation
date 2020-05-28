@@ -10,5 +10,8 @@ add_executable(
 	a.out
 	src/main.cpp
 	)
-target_link_libraries(a.out)
+
+add_library(cfdtd SHARED src/cfdtd.cpp)
+target_link_libraries(a.out cfdtd)
+# add_library(cfdtdwrapper SHARED src/cfdtdwrapper.cpp)
 # PYTHON_CONFIGURE_OPTS="--enable-shared"
