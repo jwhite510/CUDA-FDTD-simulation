@@ -1,4 +1,5 @@
 #include <complex>
+#include <fstream>
 using namespace std;
 
 template<class T>
@@ -47,40 +48,55 @@ class array2d{
     inline T& operator() (int index_0, int index_1) {
       return data[index_0*size_1+ index_1];
     }
+    void show(const char* filename){
+      write(filename);
+      string command="plotd.py "+(string)filename+".dat &";
+      system(command.c_str());
+    }
+    void write(const char* filename){
+      ofstream f;
+      f.open((string)filename+".dat");
+      for(int i=0; i < size_0; i++){
+        for(int j=0; j < size_1; j++){
+          f<<operator()(i,j)<<" ";
+        }f<<endl;
+      }
+      f.close();
+    }
 };
-  template<class T>
-  class array3d{
-    public:
-      int size_0;
-      int size_1;
-      int length;
-      int size_2;
-      T* data;
-      array3d(int size_0_in, int size_1_in, int size_2_in)
-      {
-        data = new T[size_0_in * size_1_in * size_2_in];
-        size_0 = size_0_in;
-        size_1 = size_1_in;
-        size_2 = size_2_in;
-        length = size_2 * size_1 * size_0;
+template<class T>
+class array3d{
+  public:
+    int size_0;
+    int size_1;
+    int length;
+    int size_2;
+    T* data;
+    array3d(int size_0_in, int size_1_in, int size_2_in)
+    {
+      data = new T[size_0_in * size_1_in * size_2_in];
+      size_0 = size_0_in;
+      size_1 = size_1_in;
+      size_2 = size_2_in;
+      length = size_2 * size_1 * size_0;
+    }
+    ~array3d()
+    {
+      delete [] data;
+    }
+    inline T operator() (int index_0, int index_1, int index_2) const {
+      return data[index_0*size_1*size_2 + index_1*size_2+ index_2];
+    }
+    inline T& operator() (int index_0, int index_1, int index_2) {
+      return data[index_0*size_1*size_2 + index_1*size_2+ index_2];
+    }
+    void init(T value){
+      for(int i=0; i < length; i++){
+        data[i]=value;
       }
-      ~array3d()
-      {
-        delete [] data;
-      }
-      inline T operator() (int index_0, int index_1, int index_2) const {
-        return data[index_0*size_1*size_2 + index_1*size_2+ index_2];
-      }
-      inline T& operator() (int index_0, int index_1, int index_2) {
-        return data[index_0*size_1*size_2 + index_1*size_2+ index_2];
-      }
-      void init(T value){
-        for(int i=0; i < length; i++){
-          data[i]=value;
-        }
-      }
+    }
 
-  };
+};
 float max(const array2d<float> & arr)
 {
   float max_val = -99999999;

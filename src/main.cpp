@@ -1,4 +1,5 @@
 #include<iostream>
+#include<unistd.h>
 #include<vector>
 #include"c_arrays.h"
 #include<fstream>
@@ -98,8 +99,6 @@ int main()
         J.z(i,j,k)=exp(-(pow(i-25,2)/2))*exp(-(pow(j-25,2)/2))*exp(-(pow(k-25,2)/2));
 
   for(int n=0; n < tmax_steps; n++){
-
-    // Python.call_function_np("plot", J.z.data, vector<int>{J.z.size_0,J.z.size_1,H.z.size_2}, PyArray_FLOAT64);
     for(int i=1; i < E.N_x-2; i++){
       for(int j=1; j < E.N_y-2; j++){
         for(int k=1; k < E.N_z-2; k++){
@@ -125,6 +124,22 @@ int main()
         }
       }
     }
+
+    // plot H.x
+    // H.x
+    array2d<double>hx_display(H.x.size_0,H.x.size_1);
+    int k=25;
+    for(int i=0; i < H.x.size_0; i++)
+      for(int j=0; j < H.x.size_1; j++)
+        hx_display(i,j)=H.x(i,j,k);
+
+    if(n==0)
+      hx_display.show("hx_display");
+    else {
+      hx_display.write("hx_display");
+      usleep(0.5e6);
+    }
+
   }
 
 
