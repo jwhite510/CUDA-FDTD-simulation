@@ -30,11 +30,14 @@ if __name__=="__main__":
     _y=np.arange(N_y).reshape(1,-1,1)
     _z=np.arange(N_z).reshape(1,1,-1)
     plt.figure(1)
+    cp_times=[]
+    py_times=[]
     for n in range(0,tmax_steps):
 
         fdtd.J.z[:,:,:]=np.exp(-(_x-25)**2 / 2)*np.exp(-(_y-25)**2 / 2)*np.exp(-(_z-25)**2 / 2)*np.cos(omega*n*dt)
 
 
+        time1=time.time()
         fdtd.E.x[1:-1,1:-1,1:-1]=fdtd.E.x[1:-1,1:-1,1:-1]+Ec*(fdtd.H.z[1:-1,1:-1,1:-1]-fdtd.H.z[1:-1,0:-2,1:-1])-Ec*(fdtd.H.y[1:-1,1:-1,1:-1]-fdtd.H.y[1:-1,1:-1,0:-2])
         fdtd.E.y[1:-1,1:-1,1:-1]=fdtd.E.y[1:-1,1:-1,1:-1]+Ec*(fdtd.H.x[1:-1,1:-1,1:-1]-fdtd.H.x[1:-1,1:-1,0:-2])-Ec*(fdtd.H.z[1:-1,1:-1,1:-1]-fdtd.H.z[0:-2,1:-1,1:-1])
         fdtd.E.z[1:-1,1:-1,1:-1]=fdtd.E.z[1:-1,1:-1,1:-1]+Ec*(fdtd.H.y[1:-1,1:-1,1:-1]-fdtd.H.y[0:-2,1:-1,1:-1])-Ec*(fdtd.H.x[1:-1,1:-1,1:-1]-fdtd.H.x[1:-1,0:-2,1:-1])
@@ -46,8 +49,19 @@ if __name__=="__main__":
         fdtd.H.x[1:-1,1:-1,1:-1]=fdtd.H.x[1:-1,1:-1,1:-1]+Hc*(fdtd.E.y[1:-1,1:-1,2:]-fdtd.E.y[1:-1,1:-1,1:-1])-Hc*(fdtd.E.z[1:-1,2:,1:-1]-fdtd.E.z[1:-1,1:-1,1:-1])
         fdtd.H.y[1:-1,1:-1,1:-1]=fdtd.H.y[1:-1,1:-1,1:-1]+Hc*(fdtd.E.z[2:,1:-1,1:-1]-fdtd.E.z[1:-1,1:-1,1:-1])-Hc*(fdtd.E.x[1:-1,1:-1,2:]-fdtd.E.x[1:-1,1:-1,1:-1])
         fdtd.H.z[1:-1,1:-1,1:-1]=fdtd.H.z[1:-1,1:-1,1:-1]+Hc*(fdtd.E.x[1:-1,2:,1:-1]-fdtd.E.x[1:-1,1:-1,1:-1])-Hc*(fdtd.E.y[2:,1:-1,1:-1]-fdtd.E.y[1:-1,1:-1,1:-1])
+        time2=time.time()
+        py_times.append(time2-time1)
 
-        # fdtd.timestep()
+        time1=time.time()
+        fdtd.timestep()
+        time2=time.time()
+        cp_times.append(time2-time1)
+
+        cp_avg_time=np.average(np.array(cp_times))
+        py_avg_time=np.average(np.array(py_times))
+        print("cp_avg_time =>", cp_avg_time)
+        print("py_avg_time =>", py_avg_time)
+
 
         plt.gca().cla()
         plt.imshow(fdtd.H.x[:,:,25])
