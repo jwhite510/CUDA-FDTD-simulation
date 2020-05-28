@@ -55,9 +55,9 @@ struct FDTD
     Hc ( (1/mu0)*(dt/dx)),
     Ec ( (1/eps0)*(dt/dx)),
     Jc ( (1/eps0)*dt),
-    E(50, 50, 50),
-    H(50, 50, 50),
-    J(50, 50, 50)
+    E(N_x, N_y, N_z),
+    H(N_x, N_y, N_z),
+    J(N_x, N_y, N_z)
   {
   }
   void timestep(){
