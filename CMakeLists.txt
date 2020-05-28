@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(zernikec2)
+project(cfdtd)
 
 add_definitions("-std=c++11 -g -ffast-math")
 
@@ -13,5 +13,6 @@ add_executable(
 
 add_library(cfdtd SHARED src/cfdtd.cpp)
 target_link_libraries(a.out cfdtd)
-# add_library(cfdtdwrapper SHARED src/cfdtdwrapper.cpp)
-# PYTHON_CONFIGURE_OPTS="--enable-shared"
+
+add_library(cfdtd_wrapper SHARED src/cfdtd_wrapper.cpp)
+target_link_libraries(cfdtd_wrapper cfdtd)
