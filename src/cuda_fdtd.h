@@ -3,6 +3,12 @@
 
 using namespace std;
 
+struct Constants{
+  double Hc;
+  double Jc;
+  double Ec;
+};
+
 struct array3d{
   int size_0;
   int size_1;
@@ -107,7 +113,7 @@ void add(array3d arr1, array3d arr2)
   }
 }
 __global__
-void timestepE(Tensor E, Tensor H, Tensor J)
+void timestepE(Tensor E, Tensor H, Tensor J, Constants consts)
 {
   int index=blockIdx.x*blockDim.x+threadIdx.x;
   int stride=blockDim.x*gridDim.x;
@@ -121,8 +127,8 @@ void timestepE(Tensor E, Tensor H, Tensor J)
     if(_i_ur_0>0 && _i_ur_1>0 && _i_ur_2>0){
       if(_i_ur_0<E.x.size_0-2&&_i_ur_1<E.x.size_1-2&&_i_ur_2<E.x.size_2-2) {
         // index is distance of atleast 1 from outer edge
-        double Ec=1.0; // constant value
-        double Jc=1.0; // constant value
+        double Ec=consts.Ec; // constant value
+        double Jc=consts.Jc; // constant value
 
         double value;
         value=GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2);
@@ -158,7 +164,7 @@ void timestepE(Tensor E, Tensor H, Tensor J)
   }
 }
 __global__
-void timestepH(Tensor E, Tensor H, Tensor J)
+void timestepH(Tensor E, Tensor H, Tensor J, Constants consts)
 {
   int index=blockIdx.x*blockDim.x+threadIdx.x;
   int stride=blockDim.x*gridDim.x;
@@ -172,7 +178,7 @@ void timestepH(Tensor E, Tensor H, Tensor J)
     if(_i_ur_0>0 && _i_ur_1>0 && _i_ur_2>0){
       if(_i_ur_0<E.x.size_0-2&&_i_ur_1<E.x.size_1-2&&_i_ur_2<E.x.size_2-2) {
         // index is distance of atleast 1 from outer edge
-        double Hc=1.0; // constant value
+        double Hc=consts.Hc; // constant value
 
         double value;
         value=GetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2);
@@ -201,6 +207,7 @@ struct FDTD{
   Tensor E;
   Tensor H;
   Tensor J;
+  Constants consts;
   array3d arr2;
   FDTD(int s_0, int s_1, int s_2,
       double dx,double dt,
@@ -213,6 +220,14 @@ struct FDTD{
     construct(H,Hx,Hy,Hz,s_0,s_1,s_2);
     construct(J,Jx,Jy,Jz,s_0,s_1,s_2);
 
+
+    double mu0= 4*M_PI*1e-7;
+    double eps0= 8.85e-12;
+
+    consts.Hc= (1/mu0)*(dt/dx);
+    consts.Ec= (1/eps0)*(dt/dx);
+    consts.Jc= (1/eps0)*dt;
+
     // initialize x and y arrays on the host
     // int val=0;
     // for (int i = 0; i < arr1.length; i++) {
@@ -224,11 +239,12 @@ struct FDTD{
     E.CopyToDevice();
     H.CopyToDevice();
     J.CopyToDevice();
+    cout<<"copying to device and studd"<<endl;
 
     int blockSize=256;
     int numBlocks=(E.x.length+blockSize-1)/blockSize;
-    timestepE<<<numBlocks,blockSize>>>(E,H,J);
-    timestepH<<<numBlocks,blockSize>>>(E,H,J);
+    timestepE<<<numBlocks,blockSize>>>(E,H,J,consts);
+    timestepH<<<numBlocks,blockSize>>>(E,H,J,consts);
     // cout << "numBlocks => " << numBlocks << endl;
     // add<<<numBlocks, blockSize>>>(arr1, arr2);
     E.CopyToHost();
