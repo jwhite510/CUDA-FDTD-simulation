@@ -4,9 +4,9 @@ import numpy as np
 from Cfdtd import FDTD
 
 if __name__=="__main__":
-    N_x=50
-    N_y=50
-    N_z=50
+    N_x=300
+    N_y=300
+    N_z=300
     dx=50e-9
     c=2.998e8
     dt=dx/(2*c)
@@ -28,7 +28,7 @@ if __name__=="__main__":
         # fdtd.timestep()
 
         time1=time.time()
-        fdtd.lib.FDTD_run(fdtd.a)
+        fdtd.lib.FDTD_run(fdtd.a,100)
         time2=time.time()
         print("duration:"+str(time2-time1))
 

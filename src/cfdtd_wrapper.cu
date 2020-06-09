@@ -22,9 +22,9 @@ extern "C"{
         );
     return (void*)m;
   }
-  void FDTD_run(void*p){
+  void FDTD_run(void*p,int N){
     FDTD*m=(FDTD*)p;
-    m->run();
+    m->run(N);
   }
 
 

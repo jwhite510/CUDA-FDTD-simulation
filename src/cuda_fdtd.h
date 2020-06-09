@@ -1,6 +1,8 @@
 #include <iostream>
 #include <math.h>
+#include<chrono>
 
+using namespace std::chrono;
 using namespace std;
 
 struct Constants{
@@ -235,16 +237,24 @@ struct FDTD{
       // arr2.h_data[i] = 0.0f;
     // }
   }
-  void run(){
+  void run(int N){
     E.CopyToDevice();
     H.CopyToDevice();
     J.CopyToDevice();
-    cout<<"copying to device and studd"<<endl;
 
-    int blockSize=256;
+    int blockSize=1024;
     int numBlocks=(E.x.length+blockSize-1)/blockSize;
-    timestepE<<<numBlocks,blockSize>>>(E,H,J,consts);
-    timestepH<<<numBlocks,blockSize>>>(E,H,J,consts);
+    cout << "N => " << N << endl;
+    // run N times
+    for(int i=0; i < N; i++){
+      auto start=high_resolution_clock::now();
+      timestepE<<<numBlocks,blockSize>>>(E,H,J,consts);
+      timestepH<<<numBlocks,blockSize>>>(E,H,J,consts);
+      auto stop=high_resolution_clock::now();
+      auto duration=duration_cast<microseconds>(stop-start);
+      cout << "duration [ms] => " << duration.count() << endl;
+    }
+
     // cout << "numBlocks => " << numBlocks << endl;
     // add<<<numBlocks, blockSize>>>(arr1, arr2);
     E.CopyToHost();
