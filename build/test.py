@@ -26,7 +26,11 @@ if __name__=="__main__":
 
         fdtd.J.z[:,:,:]=np.exp(-(_x-25)**2 / 2)*np.exp(-(_y-25)**2 / 2)*np.exp(-(_z-25)**2 / 2)*np.cos(omega*n*dt)
         # fdtd.timestep()
+
+        time1=time.time()
         fdtd.lib.FDTD_run(fdtd.a)
+        time2=time.time()
+        print("duration:"+str(time2-time1))
 
         plt.gca().cla()
         plt.imshow(fdtd.H.x[:,:,25])
