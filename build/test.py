@@ -4,13 +4,33 @@ import numpy as np
 from Cfdtd import FDTD
 
 if __name__=="__main__":
-    N_x=50
-    N_y=50
-    N_z=50
+    N_x=3
+    N_y=3
+    N_z=3
     dx=50e-9
     c=2.998e8
     dt=dx/(2*c)
     fdtd = FDTD(N_x,N_y,N_z,dx,dt)
+
+
+    val=0
+    for i in range(3):
+        for j in range(3):
+            for k in range(3):
+                fdtd.E.x[i,j,k]=val
+                val+=1
+
+
+    print(fdtd.E.x)
+    print(fdtd.E.y)
+    # fdtd.a
+    fdtd.lib.FDTD_run(fdtd.a)
+    print(fdtd.E.x)
+    print(fdtd.E.y)
+
+
+
+    exit()
 
     freq=500e12;
     omega =2*np.pi*freq;
