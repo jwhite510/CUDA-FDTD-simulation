@@ -107,7 +107,7 @@ void add(array3d arr1, array3d arr2)
   }
 }
 __global__
-void timestep(Tensor E, Tensor H, Tensor J)
+void timestepE(Tensor E, Tensor H, Tensor J)
 {
   int index=blockIdx.x*blockDim.x+threadIdx.x;
   int stride=blockDim.x*gridDim.x;
@@ -117,6 +117,32 @@ void timestep(Tensor E, Tensor H, Tensor J)
     int _i_ur_0=i/(E.x.size_1*E.x.size_2);
     int _i_ur_1=(i-(E.x.size_1*E.x.size_2*_i_ur_0))/(E.x.size_2);
     int _i_ur_2=i%E.x.size_2;
+
+    if(_i_ur_0>0 && _i_ur_1>0 && _i_ur_2>0){
+      if(_i_ur_0<E.x.size_0-2&&_i_ur_1<E.x.size_1-2&&_i_ur_2<E.x.size_2-2) {
+        // index is distance of atleast 1 from outer edge
+        double Ec=1.0; // constant value
+
+        double value;
+        value=GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2);
+        value+=Ec*(GetElement(H.z,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.z,_i_ur_0,_i_ur_1-1,_i_ur_2));
+        value-=Ec*(GetElement(H.y,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.y,_i_ur_0,_i_ur_1,_i_ur_2-1));
+        SetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2,value);
+
+        value=GetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2);
+        value+=Ec*(GetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2-1));
+        value-=Ec*(GetElement(H.z,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.z,_i_ur_0-1,_i_ur_1,_i_ur_2));
+        SetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2,value);
+
+        value=GetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2);
+        value+=Ec*(GetElement(H.y,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.y,_i_ur_0-1,_i_ur_1,_i_ur_2));
+        value-=Ec*(GetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.x,_i_ur_0,_i_ur_1-1,_i_ur_2));
+        SetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2,value);
+      }
+    }
+
+
+
 
     double e=GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2);
     if(_i_ur_1+1<E.y.size_1)
@@ -155,7 +181,7 @@ struct FDTD{
 
     int blockSize=256;
     int numBlocks=(E.x.length+blockSize-1)/blockSize;
-    timestep<<<numBlocks,blockSize>>>(E,H,J);
+    timestepE<<<numBlocks,blockSize>>>(E,H,J);
     // cout << "numBlocks => " << numBlocks << endl;
     // add<<<numBlocks, blockSize>>>(arr1, arr2);
     E.CopyToHost();
