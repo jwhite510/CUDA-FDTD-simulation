@@ -140,15 +140,7 @@ void timestepE(Tensor E, Tensor H, Tensor J)
         SetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2,value);
       }
     }
-
-
-
-
-    double e=GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2);
-    if(_i_ur_1+1<E.y.size_1)
-      SetElement(E.y,_i_ur_0,_i_ur_1+1,_i_ur_2, 2*e);
   }
-
 }
 
 struct FDTD{
