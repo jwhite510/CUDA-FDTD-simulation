@@ -106,6 +106,24 @@ void add(array3d arr1, array3d arr2)
 
   }
 }
+__global__
+void timestep(Tensor E, Tensor H, Tensor J)
+{
+  int index=blockIdx.x*blockDim.x+threadIdx.x;
+  int stride=blockDim.x*gridDim.x;
+
+  for(int i=index; i < E.x.length; i+=stride){
+    // unravel index
+    int _i_ur_0=i/(E.x.size_1*E.x.size_2);
+    int _i_ur_1=(i-(E.x.size_1*E.x.size_2*_i_ur_0))/(E.x.size_2);
+    int _i_ur_2=i%E.x.size_2;
+
+    double e=GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2);
+    if(_i_ur_1+1<E.y.size_1)
+      SetElement(E.y,_i_ur_0,_i_ur_1+1,_i_ur_2, 2*e);
+  }
+
+}
 
 struct FDTD{
   Tensor E;
@@ -135,8 +153,9 @@ struct FDTD{
     H.CopyToDevice();
     J.CopyToDevice();
 
-    // int blockSize=256;
-    // int numBlocks=(arr1.length+blockSize-1)/blockSize;
+    int blockSize=256;
+    int numBlocks=(E.x.length+blockSize-1)/blockSize;
+    timestep<<<numBlocks,blockSize>>>(E,H,J);
     // cout << "numBlocks => " << numBlocks << endl;
     // add<<<numBlocks, blockSize>>>(arr1, arr2);
     E.CopyToHost();

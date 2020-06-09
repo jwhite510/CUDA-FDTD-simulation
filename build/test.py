@@ -21,11 +21,17 @@ if __name__=="__main__":
                 val+=1
 
 
+    print("ftdt.E.x")
     print(fdtd.E.x)
+    print("ftdt.E.y")
     print(fdtd.E.y)
     # fdtd.a
     fdtd.lib.FDTD_run(fdtd.a)
+
+    print("-----")
+    print("ftdt.E.x")
     print(fdtd.E.x)
+    print("ftdt.E.y")
     print(fdtd.E.y)
 
 
