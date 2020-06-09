@@ -28,6 +28,21 @@ struct array3d{
   }
 
 };
+struct Tensor{
+  array3d x;
+  array3d y;
+  array3d z;
+  void CopyToHost(){
+    x.CopyToHost();
+    y.CopyToHost();
+    z.CopyToHost();
+  }
+  void CopyToDevice(){
+    x.CopyToDevice();
+    y.CopyToDevice();
+    z.CopyToDevice();
+  }
+};
 void construct(array3d &arr, double*data, int size_0,int size_1, int size_2)
 {
   arr.size_0=size_0;
@@ -40,6 +55,12 @@ void construct(array3d &arr, double*data, int size_0,int size_1, int size_2)
   // arr.h_data = new double[arr.length];
   arr.h_data = data;
 }
+void construct(Tensor& tensor, double*xdata,double*ydata,double*zdata,int size_0,int size_1, int size_2)
+{
+  construct(tensor.x, xdata, size_0,size_1,size_2);
+  construct(tensor.y, ydata, size_0,size_1,size_2);
+  construct(tensor.z, zdata, size_0,size_1,size_2);
+}
 void ToDevice(array3d &arr){
   cudaMemcpy(arr.d_data,arr.h_data,arr.length*sizeof(double),cudaMemcpyHostToDevice);
 }
@@ -49,6 +70,12 @@ void ToHost(array3d &arr){
 void destruct(array3d &arr){
   delete [] arr.h_data;
   cudaFree(arr.d_data);
+}
+void destruct(Tensor& tensor)
+{
+  destruct(tensor.x);
+  destruct(tensor.y);
+  destruct(tensor.z);
 }
 __device__
 double GetElement(const array3d arr, int i_0,int i_1,int i_2)
@@ -81,12 +108,20 @@ void add(array3d arr1, array3d arr2)
 }
 
 struct FDTD{
-  array3d arr1;
+  Tensor E;
+  Tensor H;
+  Tensor J;
   array3d arr2;
-  FDTD(int s_0, int s_1, int s_2, double* arr1hostd, double* arr2hostd){
+  FDTD(int s_0, int s_1, int s_2,
+      double dx,double dt,
+      double*Ex,double*Ey,double*Ez,
+      double*Hx,double*Hy,double*Hz,
+      double*Jx,double*Jy,double*Jz
+      ){
     // int N = 3;
-    construct(arr1, arr1hostd, s_0,s_1,s_2);
-    construct(arr2, arr2hostd, s_0,s_1,s_2);
+    construct(E,Ex,Ey,Ez,s_0,s_1,s_2);
+    construct(H,Hx,Hy,Hz,s_0,s_1,s_2);
+    construct(J,Jx,Jy,Jz,s_0,s_1,s_2);
 
     // initialize x and y arrays on the host
     // int val=0;
@@ -96,15 +131,17 @@ struct FDTD{
     // }
   }
   void run(){
-    arr1.CopyToDevice();
-    arr2.CopyToDevice();
+    E.CopyToDevice();
+    H.CopyToDevice();
+    J.CopyToDevice();
 
-    int blockSize=256;
-    int numBlocks=(arr1.length+blockSize-1)/blockSize;
-    cout << "numBlocks => " << numBlocks << endl;
-    add<<<numBlocks, blockSize>>>(arr1, arr2);
-    arr1.CopyToHost();
-    arr2.CopyToHost();
+    // int blockSize=256;
+    // int numBlocks=(arr1.length+blockSize-1)/blockSize;
+    // cout << "numBlocks => " << numBlocks << endl;
+    // add<<<numBlocks, blockSize>>>(arr1, arr2);
+    E.CopyToHost();
+    H.CopyToHost();
+    J.CopyToHost();
 
     // Wait for GPU to finish before accessing on host
     // cout<<"arr1:"<<endl;
@@ -113,7 +150,8 @@ struct FDTD{
     // arr2.show();
   }
   ~FDTD(){
-    destruct(arr1);
-    destruct(arr2);
+    destruct(E);
+    destruct(H);
+    destruct(J);
   }
 };
