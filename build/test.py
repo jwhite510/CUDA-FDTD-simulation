@@ -4,9 +4,9 @@ import numpy as np
 from Cfdtd import FDTD
 
 if __name__=="__main__":
-    N_x=300
-    N_y=300
-    N_z=300
+    N_x=25
+    N_y=25
+    N_z=25
     dx=50e-9
     c=2.998e8
     dt=dx/(2*c)
@@ -24,15 +24,16 @@ if __name__=="__main__":
     plt.figure(1)
     for n in range(0,tmax_steps):
 
-        fdtd.J.z[:,:,:]=np.exp(-(_x-25)**2 / 2)*np.exp(-(_y-25)**2 / 2)*np.exp(-(_z-25)**2 / 2)*np.cos(omega*n*dt)
+        # todo: evolve J in cuda, 
+        fdtd.J.z[:,:,:]=np.exp(-(_x-13)**2 / 5)*np.exp(-(_y-13)**2 / 5)*np.exp(-(_z-13)**2 / 5)*np.cos(omega*n*dt)
         # fdtd.timestep()
 
         time1=time.time()
-        fdtd.lib.FDTD_run(fdtd.a,100)
+        fdtd.lib.FDTD_run(fdtd.a,1)
         time2=time.time()
         print("duration:"+str(time2-time1))
 
         plt.gca().cla()
-        plt.imshow(fdtd.H.x[:,:,25])
-        plt.pause(0.1)
+        plt.imshow(fdtd.H.x[:,:,13])
+        plt.pause(0.01)
 

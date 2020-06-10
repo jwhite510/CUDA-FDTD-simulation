@@ -7,207 +7,41 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 term://.//8005:/bin/bash
-badd +1 term://.//7997:/bin/bash
-badd +12 CMakeLists.txt
+badd +46 term://.//7997:/bin/bash
+badd +1 CMakeLists.txt
 badd +24 ~/Projects/fdtdt_simulation/src/fdtd.h
-badd +1 ~/Projects/fdtdt_simulation/src/fdtdwrapper.cu
-badd +22 build/test.py
-badd +1 build/Cfdtd.py
+badd +11 ~/Projects/fdtdt_simulation/src/fdtdwrapper.cu
+badd +19 build/test.py
+badd +17 build/Cfdtd.py
 badd +1 src/cfdtd_wrapper.h
 badd +1 src/cfdtd_wrapper.cpp
-badd +1 term://.//8076:/bin/bash
+badd +319 term://.//15210:/bin/bash
 badd +1 ~/Projects/fdtdt_simulation/src
 badd +1 ~/Projects/fdtdt_simulation/CMakeLists.txt
 badd +54 term://.//8452:/bin/bash
-badd +42 src/cfdtd.cpp
-badd +23 src/cfdtd.h
-badd +111 term://.//8657:/bin/bash
-badd +77 src/cuda_fdtd.h
-badd +0 make.sh
-badd +0 src/cfdtd_wrapper.cu
-badd +0 term://.//9995:/bin/bash
+badd +92 src/cfdtd.cpp
+badd +40 src/cfdtd.h
+badd +97 src/cuda_fdtd.h
+badd +1 make.sh
+badd +22 src/cfdtd_wrapper.cu
 badd +116 term://.//12536:/bin/bash
-badd +0 .git/index
-badd +0 .save.vim
-badd +0 fugitive:///home/jonathon/Projects/ftdt/.git//0/.save.vim
+badd +1 .save.vim
+badd +574 term://.//12846:/bin/bash
+badd +814 term://.//15836:/bin/bash
+badd +300 term://.//19637:/bin/bash
+badd +292 term://.//22828:/bin/bash
+badd +1213 term://.//23280:/bin/bash
+badd +0 term://.//19427:/bin/bash
 argglobal
 %argdel
 $argadd ./
 set stal=2
-set splitbelow splitright
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
-set nosplitbelow
-set nosplitright
-wincmd t
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-exe 'vert 1resize ' . ((&columns * 106 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 105 + 106) / 212)
-argglobal
-if bufexists("term://.//7997:/bin/bash") | buffer term://.//7997:/bin/bash | else | edit term://.//7997:/bin/bash | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 46 - ((45 * winheight(0) + 23) / 46)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-46
-normal! 0
-lcd ~/Projects/ftdt
-wincmd w
-argglobal
-if bufexists("term://.//8005:/bin/bash") | buffer term://.//8005:/bin/bash | else | edit term://.//8005:/bin/bash | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 46 - ((45 * winheight(0) + 23) / 46)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-46
-normal! 0
-lcd ~/Projects/ftdt
-wincmd w
-exe 'vert 1resize ' . ((&columns * 106 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 105 + 106) / 212)
-tabedit ~/Projects/ftdt/build/test.py
+edit src/cuda_fdtd.h
 set splitbelow splitright
 wincmd _ | wincmd |
 split
 1wincmd k
 wincmd w
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd _ | wincmd |
-split
-1wincmd k
-wincmd w
-wincmd w
-set nosplitbelow
-set nosplitright
-wincmd t
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-exe '1resize ' . ((&lines * 11 + 24) / 49)
-exe '2resize ' . ((&lines * 15 + 24) / 49)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
-exe '3resize ' . ((&lines * 18 + 24) / 49)
-exe 'vert 3resize ' . ((&columns * 106 + 106) / 212)
-exe '4resize ' . ((&lines * 34 + 24) / 49)
-exe 'vert 4resize ' . ((&columns * 105 + 106) / 212)
-argglobal
-if bufexists("term://.//8076:/bin/bash") | buffer term://.//8076:/bin/bash | else | edit term://.//8076:/bin/bash | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 197 - ((10 * winheight(0) + 5) / 11)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-197
-normal! 045|
-lcd ~/Projects/ftdt
-wincmd w
-argglobal
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=
-setlocal fdl=2
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-7
-normal! zo
-20
-normal! zo
-20
-normal! zo
-20
-normal! zo
-let s:l = 10 - ((4 * winheight(0) + 7) / 15)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-10
-normal! 02|
-lcd ~/Projects/ftdt
-wincmd w
-argglobal
-if bufexists("~/Projects/ftdt/build/Cfdtd.py") | buffer ~/Projects/ftdt/build/Cfdtd.py | else | edit ~/Projects/ftdt/build/Cfdtd.py | endif
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=
-setlocal fdl=4
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-11
-normal! zo
-13
-normal! zo
-let s:l = 17 - ((11 * winheight(0) + 9) / 18)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-17
-normal! 09|
-lcd ~/Projects/ftdt
-wincmd w
-argglobal
-if bufexists("~/Projects/ftdt/CMakeLists.txt") | buffer ~/Projects/ftdt/CMakeLists.txt | else | edit ~/Projects/ftdt/CMakeLists.txt | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 17) / 34)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1
-normal! 032|
-lcd ~/Projects/ftdt
-wincmd w
-exe '1resize ' . ((&lines * 11 + 24) / 49)
-exe '2resize ' . ((&lines * 15 + 24) / 49)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
-exe '3resize ' . ((&lines * 18 + 24) / 49)
-exe 'vert 3resize ' . ((&columns * 106 + 106) / 212)
-exe '4resize ' . ((&lines * 34 + 24) / 49)
-exe 'vert 4resize ' . ((&columns * 105 + 106) / 212)
-tabedit ~/Projects/ftdt/src/cuda_fdtd.h
-set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
 wincmd _ | wincmd |
@@ -219,13 +53,6 @@ split
 wincmd w
 wincmd w
 wincmd w
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-2wincmd k
-wincmd w
-wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
@@ -233,17 +60,33 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 35 + 24) / 49)
-exe 'vert 1resize ' . ((&columns * 70 + 106) / 212)
-exe '2resize ' . ((&lines * 10 + 24) / 49)
+exe '1resize ' . ((&lines * 3 + 24) / 49)
+exe '2resize ' . ((&lines * 21 + 24) / 49)
 exe 'vert 2resize ' . ((&columns * 70 + 106) / 212)
-exe 'vert 3resize ' . ((&columns * 60 + 106) / 212)
-exe '4resize ' . ((&lines * 15 + 24) / 49)
-exe 'vert 4resize ' . ((&columns * 80 + 106) / 212)
-exe '5resize ' . ((&lines * 19 + 24) / 49)
-exe 'vert 5resize ' . ((&columns * 80 + 106) / 212)
-exe '6resize ' . ((&lines * 10 + 24) / 49)
-exe 'vert 6resize ' . ((&columns * 80 + 106) / 212)
+exe '3resize ' . ((&lines * 20 + 24) / 49)
+exe 'vert 3resize ' . ((&columns * 70 + 106) / 212)
+exe '4resize ' . ((&lines * 42 + 24) / 49)
+exe 'vert 4resize ' . ((&columns * 70 + 106) / 212)
+exe '5resize ' . ((&lines * 42 + 24) / 49)
+exe 'vert 5resize ' . ((&columns * 70 + 106) / 212)
+argglobal
+if bufexists("term://.//15210:/bin/bash") | buffer term://.//15210:/bin/bash | else | edit term://.//15210:/bin/bash | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 2999 - ((0 * winheight(0) + 1) / 3)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+2999
+normal! 020|
+lcd ~/Projects/ftdt
+wincmd w
 argglobal
 setlocal fdm=indent
 setlocal fde=0
@@ -253,42 +96,203 @@ setlocal fdl=5
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-7
+15
 normal! zo
-66
+57
 normal! zo
-70
+128
 normal! zo
-84
+132
 normal! zo
-87
+137
 normal! zo
-let s:l = 105 - ((21 * winheight(0) + 17) / 35)
+215
+normal! zo
+221
+normal! zo
+247
+normal! zo
+let s:l = 60 - ((14 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-105
-normal! 05|
+60
+normal! 0
 lcd ~/Projects/ftdt
 wincmd w
 argglobal
-if bufexists("~/Projects/ftdt/src/cfdtd.h") | buffer ~/Projects/ftdt/src/cfdtd.h | else | edit ~/Projects/ftdt/src/cfdtd.h | endif
+if bufexists("~/Projects/ftdt/build/test.py") | buffer ~/Projects/ftdt/build/test.py | else | edit ~/Projects/ftdt/build/test.py | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=
+setlocal fdl=2
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+28,38fold
+7,38fold
+7
+normal! zo
+let s:l = 27 - ((15 * winheight(0) + 10) / 20)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+27
+normal! 09|
+lcd ~/Projects/ftdt
+wincmd w
+argglobal
+if bufexists("~/Projects/ftdt/src/cuda_fdtd.h") | buffer ~/Projects/ftdt/src/cuda_fdtd.h | else | edit ~/Projects/ftdt/src/cuda_fdtd.h | endif
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
 setlocal fdi=#
-setlocal fdl=3
+setlocal fdl=5
 setlocal fml=1
 setlocal fdn=20
-setlocal fen
-22
+setlocal nofen
+15
 normal! zo
-let s:l = 23 - ((5 * winheight(0) + 5) / 10)
+109
+normal! zo
+113
+normal! zo
+128
+normal! zo
+132
+normal! zo
+137
+normal! zo
+178
+normal! zo
+182
+normal! zo
+187
+normal! zo
+215
+normal! zo
+221
+normal! zo
+247
+normal! zo
+let s:l = 149 - ((18 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-23
-normal! 03|
+149
+normal! 09|
+lcd ~/Projects/ftdt
+wincmd w
+argglobal
+if bufexists("~/Projects/ftdt/src/cuda_fdtd.h") | buffer ~/Projects/ftdt/src/cuda_fdtd.h | else | edit ~/Projects/ftdt/src/cuda_fdtd.h | endif
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=5
+setlocal fml=1
+setlocal fdn=20
+setlocal nofen
+15
+normal! zo
+109
+normal! zo
+113
+normal! zo
+128
+normal! zo
+132
+normal! zo
+137
+normal! zo
+178
+normal! zo
+182
+normal! zo
+187
+normal! zo
+215
+normal! zo
+221
+normal! zo
+247
+normal! zo
+let s:l = 195 - ((20 * winheight(0) + 21) / 42)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+195
+normal! 09|
+lcd ~/Projects/ftdt
+wincmd w
+3wincmd w
+exe '1resize ' . ((&lines * 3 + 24) / 49)
+exe '2resize ' . ((&lines * 21 + 24) / 49)
+exe 'vert 2resize ' . ((&columns * 70 + 106) / 212)
+exe '3resize ' . ((&lines * 20 + 24) / 49)
+exe 'vert 3resize ' . ((&columns * 70 + 106) / 212)
+exe '4resize ' . ((&lines * 42 + 24) / 49)
+exe 'vert 4resize ' . ((&columns * 70 + 106) / 212)
+exe '5resize ' . ((&lines * 42 + 24) / 49)
+exe 'vert 5resize ' . ((&columns * 70 + 106) / 212)
+tabnew
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+argglobal
+if bufexists("term://.//19427:/bin/bash") | buffer term://.//19427:/bin/bash | else | edit term://.//19427:/bin/bash | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 606 - ((45 * winheight(0) + 23) / 46)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+606
+normal! 039|
+lcd ~/Projects/ftdt
+tabedit ~/Projects/ftdt/src/cuda_fdtd.h
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+exe 'vert 1resize ' . ((&columns * 106 + 106) / 212)
+exe 'vert 2resize ' . ((&columns * 105 + 106) / 212)
+argglobal
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=5
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 258 - ((27 * winheight(0) + 23) / 46)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+258
+normal! 07|
 lcd ~/Projects/ftdt
 wincmd w
 argglobal
@@ -305,42 +309,34 @@ setlocal fen
 normal! zo
 16
 normal! zo
-20
+18
 normal! zo
-let s:l = 17 - ((16 * winheight(0) + 23) / 46)
+let s:l = 18 - ((17 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-17
-normal! 035|
+18
+normal! 011|
 lcd ~/Projects/ftdt
 wincmd w
-argglobal
-if bufexists("~/Projects/ftdt/build/Cfdtd.py") | buffer ~/Projects/ftdt/build/Cfdtd.py | else | edit ~/Projects/ftdt/build/Cfdtd.py | endif
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=
-setlocal fdl=4
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-11
-normal! zo
-13
-normal! zo
-19
-normal! zo
-let s:l = 20 - ((8 * winheight(0) + 7) / 15)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-20
-normal! 017|
-lcd ~/Projects/ftdt
+exe 'vert 1resize ' . ((&columns * 106 + 106) / 212)
+exe 'vert 2resize ' . ((&columns * 105 + 106) / 212)
+tabedit ~/Projects/ftdt/build/test.py
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+1wincmd h
 wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+exe 'vert 1resize ' . ((&columns * 106 + 106) / 212)
+exe 'vert 2resize ' . ((&columns * 105 + 106) / 212)
 argglobal
-if bufexists("~/Projects/ftdt/build/test.py") | buffer ~/Projects/ftdt/build/test.py | else | edit ~/Projects/ftdt/build/test.py | endif
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -351,179 +347,16 @@ setlocal fdn=20
 setlocal fen
 7
 normal! zo
-18
-normal! zo
-19
-normal! zo
-20
-normal! zo
-let s:l = 20 - ((15 * winheight(0) + 9) / 19)
+let s:l = 28 - ((27 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-20
-normal! 017|
+28
+normal! 09|
 lcd ~/Projects/ftdt
 wincmd w
 argglobal
-if bufexists("term://.//8657:/bin/bash") | buffer term://.//8657:/bin/bash | else | edit term://.//8657:/bin/bash | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 97 - ((9 * winheight(0) + 5) / 10)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-97
-normal! 0
-lcd ~/Projects/ftdt
-wincmd w
-5wincmd w
-exe '1resize ' . ((&lines * 35 + 24) / 49)
-exe 'vert 1resize ' . ((&columns * 70 + 106) / 212)
-exe '2resize ' . ((&lines * 10 + 24) / 49)
-exe 'vert 2resize ' . ((&columns * 70 + 106) / 212)
-exe 'vert 3resize ' . ((&columns * 60 + 106) / 212)
-exe '4resize ' . ((&lines * 15 + 24) / 49)
-exe 'vert 4resize ' . ((&columns * 80 + 106) / 212)
-exe '5resize ' . ((&lines * 19 + 24) / 49)
-exe 'vert 5resize ' . ((&columns * 80 + 106) / 212)
-exe '6resize ' . ((&lines * 10 + 24) / 49)
-exe 'vert 6resize ' . ((&columns * 80 + 106) / 212)
-tabedit ~/Projects/ftdt/.git/index
-set splitbelow splitright
-wincmd _ | wincmd |
-split
-1wincmd k
-wincmd w
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
-set nosplitbelow
-set nosplitright
-wincmd t
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-exe '1resize ' . ((&lines * 23 + 24) / 49)
-exe '2resize ' . ((&lines * 22 + 24) / 49)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
-exe '3resize ' . ((&lines * 22 + 24) / 49)
-exe 'vert 3resize ' . ((&columns * 105 + 106) / 212)
-argglobal
-setlocal fdm=syntax
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=1
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 5 - ((4 * winheight(0) + 11) / 23)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-5
-normal! 0
-lcd ~/Projects/ftdt
-wincmd w
-argglobal
-if bufexists("fugitive:///home/jonathon/Projects/ftdt/.git//0/.save.vim") | buffer fugitive:///home/jonathon/Projects/ftdt/.git//0/.save.vim | else | edit fugitive:///home/jonathon/Projects/ftdt/.git//0/.save.vim | endif
-setlocal fdm=diff
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 11) / 22)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1
-normal! 0
-lcd ~/Projects/ftdt
-wincmd w
-argglobal
-if bufexists("~/Projects/ftdt/.save.vim") | buffer ~/Projects/ftdt/.save.vim | else | edit ~/Projects/ftdt/.save.vim | endif
-setlocal fdm=diff
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 1 - ((0 * winheight(0) + 11) / 22)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1
-normal! 0
-lcd ~/Projects/ftdt
-wincmd w
-exe '1resize ' . ((&lines * 23 + 24) / 49)
-exe '2resize ' . ((&lines * 22 + 24) / 49)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
-exe '3resize ' . ((&lines * 22 + 24) / 49)
-exe 'vert 3resize ' . ((&columns * 105 + 106) / 212)
-tabedit ~/Projects/fdtdt_simulation/src/fdtdwrapper.cu
-set splitbelow splitright
-wincmd _ | wincmd |
-split
-1wincmd k
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
-wincmd _ | wincmd |
-split
-1wincmd k
-wincmd w
-wincmd w
-set nosplitbelow
-set nosplitright
-wincmd t
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-exe '1resize ' . ((&lines * 39 + 24) / 49)
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe '2resize ' . ((&lines * 19 + 24) / 49)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
-exe '3resize ' . ((&lines * 19 + 24) / 49)
-exe 'vert 3resize ' . ((&columns * 106 + 106) / 212)
-exe '4resize ' . ((&lines * 6 + 24) / 49)
-argglobal
-setlocal fdm=indent
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=2
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-6
-normal! zo
-let s:l = 11 - ((10 * winheight(0) + 19) / 39)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-11
-normal! 0
-lcd ~/Projects/ftdt
-wincmd w
-argglobal
-if bufexists("~/Projects/fdtdt_simulation/CMakeLists.txt") | buffer ~/Projects/fdtdt_simulation/CMakeLists.txt | else | edit ~/Projects/fdtdt_simulation/CMakeLists.txt | endif
+if bufexists("~/Projects/ftdt/build/Cfdtd.py") | buffer ~/Projects/ftdt/build/Cfdtd.py | else | edit ~/Projects/ftdt/build/Cfdtd.py | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -533,16 +366,72 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 16 - ((12 * winheight(0) + 9) / 19)
+let s:l = 22 - ((21 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-16
-normal! 0
+22
+normal! 017|
+lcd ~/Projects/ftdt
+wincmd w
+exe 'vert 1resize ' . ((&columns * 106 + 106) / 212)
+exe 'vert 2resize ' . ((&columns * 105 + 106) / 212)
+tabedit ~/Projects/ftdt/src/cuda_fdtd.h
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+wincmd _ | wincmd |
+vsplit
+2wincmd h
+wincmd w
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+exe 'vert 1resize ' . ((&columns * 70 + 106) / 212)
+exe 'vert 2resize ' . ((&columns * 70 + 106) / 212)
+exe 'vert 3resize ' . ((&columns * 70 + 106) / 212)
+argglobal
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=5
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 258 - ((24 * winheight(0) + 23) / 46)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+258
+normal! 07|
 lcd ~/Projects/ftdt
 wincmd w
 argglobal
-if bufexists("~/Projects/fdtdt_simulation/src/fdtd.h") | buffer ~/Projects/fdtdt_simulation/src/fdtd.h | else | edit ~/Projects/fdtdt_simulation/src/fdtd.h | endif
+if bufexists("~/Projects/ftdt/src/cuda_fdtd.h") | buffer ~/Projects/ftdt/src/cuda_fdtd.h | else | edit ~/Projects/ftdt/src/cuda_fdtd.h | endif
+setlocal fdm=indent
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=5
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 118 - ((25 * winheight(0) + 23) / 46)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+118
+normal! 05|
+lcd ~/Projects/ftdt
+wincmd w
+argglobal
+if bufexists("~/Projects/ftdt/src/cuda_fdtd.h") | buffer ~/Projects/ftdt/src/cuda_fdtd.h | else | edit ~/Projects/ftdt/src/cuda_fdtd.h | endif
 setlocal fdm=indent
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -553,46 +442,48 @@ setlocal fdn=20
 setlocal fen
 15
 normal! zo
-27
+28
 normal! zo
-104
+29
 normal! zo
-107
+40
 normal! zo
-let s:l = 24 - ((6 * winheight(0) + 9) / 19)
+57
+normal! zo
+109
+normal! zo
+113
+normal! zo
+128
+normal! zo
+132
+normal! zo
+137
+normal! zo
+178
+normal! zo
+182
+normal! zo
+187
+normal! zo
+215
+normal! zo
+221
+normal! zo
+247
+normal! zo
+let s:l = 36 - ((22 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-24
+36
 normal! 0
 lcd ~/Projects/ftdt
 wincmd w
-argglobal
-if bufexists("term://.//9995:/bin/bash") | buffer term://.//9995:/bin/bash | else | edit term://.//9995:/bin/bash | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-let s:l = 6 - ((5 * winheight(0) + 3) / 6)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-6
-normal! 057|
-lcd ~/Projects/ftdt
-wincmd w
-exe '1resize ' . ((&lines * 39 + 24) / 49)
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe '2resize ' . ((&lines * 19 + 24) / 49)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
-exe '3resize ' . ((&lines * 19 + 24) / 49)
-exe 'vert 3resize ' . ((&columns * 106 + 106) / 212)
-exe '4resize ' . ((&lines * 6 + 24) / 49)
-tabnext 3
+exe 'vert 1resize ' . ((&columns * 70 + 106) / 212)
+exe 'vert 2resize ' . ((&columns * 70 + 106) / 212)
+exe 'vert 3resize ' . ((&columns * 70 + 106) / 212)
+tabnext 1
 set stal=1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

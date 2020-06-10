@@ -51,6 +51,14 @@ struct Tensor{
     z.CopyToDevice();
   }
 };
+__device__
+void unravel_index(const array3d &arr,const int raveled_index, int &i,int &j,int &k)
+{
+    i=raveled_index/(arr.size_1*arr.size_2);
+    j=(raveled_index-(arr.size_1*arr.size_2*i))/(arr.size_2);
+    k=raveled_index%arr.size_2;
+}
+
 void construct(array3d &arr, double*data, int size_0,int size_1, int size_2)
 {
   arr.size_0=size_0;
@@ -86,11 +94,11 @@ void destruct(Tensor& tensor)
   destruct(tensor.z);
 }
 __device__
-double GetElement(const array3d arr, int i_0,int i_1,int i_2)
+double Get(const array3d arr, int i_0,int i_1,int i_2)
 {
   return arr.d_data[i_0*arr.size_1*arr.size_2 + i_1*arr.size_2 + i_2];
 }
-__device__ void SetElement(array3d arr, int i_0, int i_1, int i_2, double value)
+__device__ void Set(array3d arr, int i_0, int i_1, int i_2, double value)
 {
   arr.d_data[i_0*arr.size_1*arr.size_2 + i_1*arr.size_2 + i_2]=value;
 }
@@ -107,10 +115,10 @@ void add(array3d arr1, array3d arr2)
     int _i_ur_1=(i-(arr1.size_1*arr1.size_2*_i_ur_0))/(arr1.size_2);
     int _i_ur_2=i%arr1.size_2;
 
-    double e=GetElement(arr1,_i_ur_0,_i_ur_1,_i_ur_2);
+    double e=Get(arr1,_i_ur_0,_i_ur_1,_i_ur_2);
     if(_i_ur_1+1<arr2.size_1)
-      SetElement(arr2,_i_ur_0,_i_ur_1+1,_i_ur_2, 2*e);
-    // SetElement(arr2,_i_ur_0,_i_ur_1,_i_ur_2, i);
+      Set(arr2,_i_ur_0,_i_ur_1+1,_i_ur_2, 2*e);
+    // Set(arr2,_i_ur_0,_i_ur_1,_i_ur_2, i);
 
   }
 }
@@ -120,46 +128,45 @@ void timestepE(Tensor E, Tensor H, Tensor J, Constants consts)
   int index=blockIdx.x*blockDim.x+threadIdx.x;
   int stride=blockDim.x*gridDim.x;
 
-  for(int i=index; i < E.x.length; i+=stride){
+  for(int thread_i=index; thread_i < E.x.length; thread_i+=stride){
     // unravel index
-    int _i_ur_0=i/(E.x.size_1*E.x.size_2);
-    int _i_ur_1=(i-(E.x.size_1*E.x.size_2*_i_ur_0))/(E.x.size_2);
-    int _i_ur_2=i%E.x.size_2;
+    int i,j,k;
+    unravel_index(E.x,thread_i,i,j,k);
 
-    if(_i_ur_0>0 && _i_ur_1>0 && _i_ur_2>0){
-      if(_i_ur_0<E.x.size_0-2&&_i_ur_1<E.x.size_1-2&&_i_ur_2<E.x.size_2-2) {
+    if(i>0 && j>0 && k>0){
+      if(i<E.x.size_0-1&&j<E.x.size_1-1&&k<E.x.size_2-1) {
         // index is distance of atleast 1 from outer edge
         double Ec=consts.Ec; // constant value
         double Jc=consts.Jc; // constant value
 
         double value;
-        value=GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2);
-        value+=Ec*(GetElement(H.z,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.z,_i_ur_0,_i_ur_1-1,_i_ur_2));
-        value-=Ec*(GetElement(H.y,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.y,_i_ur_0,_i_ur_1,_i_ur_2-1));
-        SetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(E.x,i,j,k);
+        value+=Ec*(Get(H.z,i,j,k)-Get(H.z,i,j-1,k));
+        value-=Ec*(Get(H.y,i,j,k)-Get(H.y,i,j,k-1));
+        Set(E.x,i,j,k,value);
 
-        value=GetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2);
-        value+=Ec*(GetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2-1));
-        value-=Ec*(GetElement(H.z,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.z,_i_ur_0-1,_i_ur_1,_i_ur_2));
-        SetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(E.y,i,j,k);
+        value+=Ec*(Get(H.x,i,j,k)-Get(H.x,i,j,k-1));
+        value-=Ec*(Get(H.z,i,j,k)-Get(H.z,i-1,j,k));
+        Set(E.y,i,j,k,value);
 
-        value=GetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2);
-        value+=Ec*(GetElement(H.y,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.y,_i_ur_0-1,_i_ur_1,_i_ur_2));
-        value-=Ec*(GetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2)-GetElement(H.x,_i_ur_0,_i_ur_1-1,_i_ur_2));
-        SetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(E.z,i,j,k);
+        value+=Ec*(Get(H.y,i,j,k)-Get(H.y,i-1,j,k));
+        value-=Ec*(Get(H.x,i,j,k)-Get(H.x,i,j-1,k));
+        Set(E.z,i,j,k,value);
 
         // source term
-        value=GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2);
-        value-=Jc*GetElement(J.x,_i_ur_0,_i_ur_1,_i_ur_2);
-        SetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(E.x,i,j,k);
+        value-=Jc*Get(J.x,i,j,k);
+        Set(E.x,i,j,k,value);
 
-        value=GetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2);
-        value-=Jc*GetElement(J.y,_i_ur_0,_i_ur_1,_i_ur_2);
-        SetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(E.y,i,j,k);
+        value-=Jc*Get(J.y,i,j,k);
+        Set(E.y,i,j,k,value);
 
-        value=GetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2);
-        value-=Jc*GetElement(J.z,_i_ur_0,_i_ur_1,_i_ur_2);
-        SetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(E.z,i,j,k);
+        value-=Jc*Get(J.z,i,j,k);
+        Set(E.z,i,j,k,value);
 
       }
     }
@@ -171,32 +178,31 @@ void timestepH(Tensor E, Tensor H, Tensor J, Constants consts)
   int index=blockIdx.x*blockDim.x+threadIdx.x;
   int stride=blockDim.x*gridDim.x;
 
-  for(int i=index; i < E.x.length; i+=stride){
+  for(int thread_i=index; thread_i < E.x.length; thread_i+=stride){
     // unravel index
-    int _i_ur_0=i/(E.x.size_1*E.x.size_2);
-    int _i_ur_1=(i-(E.x.size_1*E.x.size_2*_i_ur_0))/(E.x.size_2);
-    int _i_ur_2=i%E.x.size_2;
+    int i,j,k;
+    unravel_index(E.x,thread_i,i,j,k);
 
-    if(_i_ur_0>0 && _i_ur_1>0 && _i_ur_2>0){
-      if(_i_ur_0<E.x.size_0-2&&_i_ur_1<E.x.size_1-2&&_i_ur_2<E.x.size_2-2) {
+    if(i>0 && j>0 && k>0){
+      if(i<E.x.size_0-1&&j<E.x.size_1-1&&k<E.x.size_2-1) {
         // index is distance of atleast 1 from outer edge
         double Hc=consts.Hc; // constant value
 
         double value;
-        value=GetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2);
-        value+=Hc*(GetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2+1)-GetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2));
-        value-=Hc*(GetElement(E.z,_i_ur_0,_i_ur_1+1,_i_ur_2)-GetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2));
-        SetElement(H.x,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(H.x,i,j,k);
+        value+=Hc*(Get(E.y,i,j,k+1)-Get(E.y,i,j,k));
+        value-=Hc*(Get(E.z,i,j+1,k)-Get(E.z,i,j,k));
+        Set(H.x,i,j,k,value);
 
-        value=GetElement(H.y,_i_ur_0,_i_ur_1,_i_ur_2);
-        value+=Hc*(GetElement(E.z,_i_ur_0+1,_i_ur_1,_i_ur_2)-GetElement(E.z,_i_ur_0,_i_ur_1,_i_ur_2));
-        value-=Hc*(GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2+1)-GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2));
-        SetElement(H.y,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(H.y,i,j,k);
+        value+=Hc*(Get(E.z,i+1,j,k)-Get(E.z,i,j,k));
+        value-=Hc*(Get(E.x,i,j,k+1)-Get(E.x,i,j,k));
+        Set(H.y,i,j,k,value);
 
-        value=GetElement(H.z,_i_ur_0,_i_ur_1,_i_ur_2);
-        value+=Hc*(GetElement(E.x,_i_ur_0,_i_ur_1+1,_i_ur_2)-GetElement(E.x,_i_ur_0,_i_ur_1,_i_ur_2));
-        value-=Hc*(GetElement(E.y,_i_ur_0+1,_i_ur_1,_i_ur_2)-GetElement(E.y,_i_ur_0,_i_ur_1,_i_ur_2));
-        SetElement(H.z,_i_ur_0,_i_ur_1,_i_ur_2,value);
+        value=Get(H.z,i,j,k);
+        value+=Hc*(Get(E.x,i,j+1,k)-Get(E.x,i,j,k));
+        value-=Hc*(Get(E.y,i+1,j,k)-Get(E.y,i,j,k));
+        Set(H.z,i,j,k,value);
 
 
 
