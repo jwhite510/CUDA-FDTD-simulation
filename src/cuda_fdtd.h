@@ -5,10 +5,14 @@
 using namespace std::chrono;
 using namespace std;
 
-struct Constants{
+struct Parameters{
   double Hc;
   double Jc;
   double Ec;
+  double t;
+  double tau; // duration of excitation
+  double omega; // frequency of excitation
+  double dt; // frequency of excitation
 };
 
 struct array3d{
@@ -123,7 +127,7 @@ void add(array3d arr1, array3d arr2)
   }
 }
 __global__
-void timestepE(Tensor E, Tensor H, Tensor J, Constants consts)
+void timestepE(Tensor E, Tensor H, Tensor J, Parameters params)
 {
   int index=blockIdx.x*blockDim.x+threadIdx.x;
   int stride=blockDim.x*gridDim.x;
@@ -136,8 +140,8 @@ void timestepE(Tensor E, Tensor H, Tensor J, Constants consts)
     if(i>0 && j>0 && k>0){
       if(i<E.x.size_0-1&&j<E.x.size_1-1&&k<E.x.size_2-1) {
         // index is distance of atleast 1 from outer edge
-        double Ec=consts.Ec; // constant value
-        double Jc=consts.Jc; // constant value
+        double Ec=params.Ec; // constant value
+        double Jc=params.Jc; // constant value
 
         // apply boundary condition
         double value;
@@ -158,15 +162,15 @@ void timestepE(Tensor E, Tensor H, Tensor J, Constants consts)
 
         // source term
         value=Get(E.x,i,j,k);
-        value-=Jc*Get(J.x,i,j,k);
+        value-=Jc*Get(J.x,i,j,k)*exp(-params.t/params.tau)*cos(params.omega*params.t);
         Set(E.x,i,j,k,value);
 
         value=Get(E.y,i,j,k);
-        value-=Jc*Get(J.y,i,j,k);
+        value-=Jc*Get(J.y,i,j,k)*exp(-params.t/params.tau)*cos(params.omega*params.t);
         Set(E.y,i,j,k,value);
 
         value=Get(E.z,i,j,k);
-        value-=Jc*Get(J.z,i,j,k);
+        value-=Jc*Get(J.z,i,j,k)*exp(-params.t/params.tau)*cos(params.omega*params.t);
         Set(E.z,i,j,k,value);
         
       }
@@ -174,7 +178,7 @@ void timestepE(Tensor E, Tensor H, Tensor J, Constants consts)
   }
 }
 __global__
-void timestepH(Tensor E, Tensor H, Tensor J, Constants consts)
+void timestepH(Tensor E, Tensor H, Tensor J, Parameters params)
 {
   int index=blockIdx.x*blockDim.x+threadIdx.x;
   int stride=blockDim.x*gridDim.x;
@@ -187,7 +191,7 @@ void timestepH(Tensor E, Tensor H, Tensor J, Constants consts)
     if(i>0 && j>0 && k>0){
       if(i<E.x.size_0-1&&j<E.x.size_1-1&&k<E.x.size_2-1) {
         // index is distance of atleast 1 from outer edge
-        double Hc=consts.Hc; // constant value
+        double Hc=params.Hc; // constant value
         double value;
         value=Get(H.x,i,j,k);
         value+=Hc*(Get(E.y,i,j,k+1)-Get(E.y,i,j,k));
@@ -213,10 +217,10 @@ struct FDTD{
   Tensor E;
   Tensor H;
   Tensor J;
-  Constants consts;
+  Parameters params;
   array3d arr2;
   FDTD(int s_0, int s_1, int s_2,
-      double dx,double dt,
+      double dx,double dt,double omega,double tau,
       double*Ex,double*Ey,double*Ez,
       double*Hx,double*Hy,double*Hz,
       double*Jx,double*Jy,double*Jz
@@ -230,9 +234,13 @@ struct FDTD{
     double mu0= 4*M_PI*1e-7;
     double eps0= 8.85e-12;
 
-    consts.Hc= (1/mu0)*(dt/dx);
-    consts.Ec= (1/eps0)*(dt/dx);
-    consts.Jc= (1/eps0)*dt;
+    params.Hc= (1/mu0)*(dt/dx);
+    params.Ec= (1/eps0)*(dt/dx);
+    params.Jc= (1/eps0)*dt;
+    params.omega=omega;
+    params.tau=tau;
+    params.t=0;
+    params.dt=dt;
 
     // initialize x and y arrays on the host
     // int val=0;
@@ -252,8 +260,9 @@ struct FDTD{
     // run N times
     for(int i=0; i < N; i++){
       auto start=high_resolution_clock::now();
-      timestepE<<<numBlocks,blockSize>>>(E,H,J,consts);
-      timestepH<<<numBlocks,blockSize>>>(E,H,J,consts);
+      timestepE<<<numBlocks,blockSize>>>(E,H,J,params);
+      timestepH<<<numBlocks,blockSize>>>(E,H,J,params);
+      params.t+=params.dt;
       auto stop=high_resolution_clock::now();
       auto duration=duration_cast<microseconds>(stop-start);
       cout << "duration [ms] => " << duration.count() << endl;
@@ -271,7 +280,7 @@ struct FDTD{
     // cout<<"arr2:"<<endl;
     // arr2.show();
   }
-  ~FDTD(){
+  void cleanup(){
     destruct(E);
     destruct(H);
     destruct(J);
