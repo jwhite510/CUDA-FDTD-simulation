@@ -38,5 +38,7 @@ if __name__=="__main__":
         plt.pause(0.01)
 
 
+    fdtd.delete()
+
 
 

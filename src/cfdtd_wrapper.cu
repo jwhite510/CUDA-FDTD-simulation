@@ -28,7 +28,6 @@ extern "C"{
   }
   void FDTD_delete(void*p){
     FDTD*m=(FDTD*)p;
-    m->cleanup();
-    cout<<"her i am"<<endl;
+    delete m;
   }
 }

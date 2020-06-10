@@ -88,7 +88,10 @@ void ToHost(array3d &arr){
   cudaMemcpy(arr.h_data,arr.d_data,arr.length*sizeof(double),cudaMemcpyDeviceToHost);
 }
 void destruct(array3d &arr){
-  delete [] arr.h_data;
+
+  // dont destroy shared pointers
+  // delete [] arr.h_data;
+
   cudaFree(arr.d_data);
 }
 void destruct(Tensor& tensor)
@@ -256,7 +259,7 @@ struct FDTD{
 
     int blockSize=1024;
     int numBlocks=(E.x.length+blockSize-1)/blockSize;
-    cout << "N => " << N << endl;
+    // cout << "N => " << N << endl;
     // run N times
     for(int i=0; i < N; i++){
       auto start=high_resolution_clock::now();
@@ -265,7 +268,7 @@ struct FDTD{
       params.t+=params.dt;
       auto stop=high_resolution_clock::now();
       auto duration=duration_cast<microseconds>(stop-start);
-      cout << "duration [ms] => " << duration.count() << endl;
+      // cout << "duration [ms] => " << duration.count() << endl;
     }
 
     // cout << "numBlocks => " << numBlocks << endl;
@@ -280,7 +283,7 @@ struct FDTD{
     // cout<<"arr2:"<<endl;
     // arr2.show();
   }
-  void cleanup(){
+  ~FDTD(){
     destruct(E);
     destruct(H);
     destruct(J);
