@@ -139,35 +139,85 @@ void timestepE(Tensor E, Tensor H, Tensor J, Constants consts)
         double Ec=consts.Ec; // constant value
         double Jc=consts.Jc; // constant value
 
-        double value;
-        value=Get(E.x,i,j,k);
-        value+=Ec*(Get(H.z,i,j,k)-Get(H.z,i,j-1,k));
-        value-=Ec*(Get(H.y,i,j,k)-Get(H.y,i,j,k-1));
-        Set(E.x,i,j,k,value);
+        // apply boundary condition
+        if(i==1){
+          double value;
+          value=Get(E.x,i+1,j,k);
+          Set(E.x,i,j,k,-value);
+          value=Get(E.y,i+1,j,k);
+          Set(E.y,i,j,k,-value);
+          value=Get(E.z,i+1,j,k);
+          Set(E.z,i,j,k,-value);
+        }else if(j==1){
+          double value;
+          value=Get(E.x,i,j+1,k);
+          Set(E.x,i,j,k,-value);
+          value=Get(E.y,i,j+1,k);
+          Set(E.y,i,j,k,-value);
+          value=Get(E.z,i,j+1,k);
+          Set(E.z,i,j,k,-value);
+        }else if(k==1){
+          double value;
+          value=Get(E.x,i,j,k+1);
+          Set(E.x,i,j,k,-value);
+          value=Get(E.y,i,j,k+1);
+          Set(E.y,i,j,k,-value);
+          value=Get(E.z,i,j,k+1);
+          Set(E.z,i,j,k,-value);
+        }else if(i==E.x.size_0-2){
+          double value;
+          value=Get(E.x,i-1,j,k);
+          Set(E.x,i,j,k,-value);
+          value=Get(E.y,i-1,j,k);
+          Set(E.y,i,j,k,-value);
+          value=Get(E.z,i-1,j,k);
+          Set(E.z,i,j,k,-value);
+        }else if(j==E.x.size_1-2){
+          double value;
+          value=Get(E.x,i,j-1,k);
+          Set(E.x,i,j,k,-value);
+          value=Get(E.y,i,j-1,k);
+          Set(E.y,i,j,k,-value);
+          value=Get(E.z,i,j-1,k);
+          Set(E.z,i,j,k,-value);
+        }else if(k==E.x.size_2-2){
+          double value;
+          value=Get(E.x,i,j,k-1);
+          Set(E.x,i,j,k,-value);
+          value=Get(E.y,i,j,k-1);
+          Set(E.y,i,j,k,-value);
+          value=Get(E.z,i,j,k-1);
+          Set(E.z,i,j,k,-value);
+        } else{
+          double value;
+          value=Get(E.x,i,j,k);
+          value+=Ec*(Get(H.z,i,j,k)-Get(H.z,i,j-1,k));
+          value-=Ec*(Get(H.y,i,j,k)-Get(H.y,i,j,k-1));
+          Set(E.x,i,j,k,value);
 
-        value=Get(E.y,i,j,k);
-        value+=Ec*(Get(H.x,i,j,k)-Get(H.x,i,j,k-1));
-        value-=Ec*(Get(H.z,i,j,k)-Get(H.z,i-1,j,k));
-        Set(E.y,i,j,k,value);
+          value=Get(E.y,i,j,k);
+          value+=Ec*(Get(H.x,i,j,k)-Get(H.x,i,j,k-1));
+          value-=Ec*(Get(H.z,i,j,k)-Get(H.z,i-1,j,k));
+          Set(E.y,i,j,k,value);
 
-        value=Get(E.z,i,j,k);
-        value+=Ec*(Get(H.y,i,j,k)-Get(H.y,i-1,j,k));
-        value-=Ec*(Get(H.x,i,j,k)-Get(H.x,i,j-1,k));
-        Set(E.z,i,j,k,value);
+          value=Get(E.z,i,j,k);
+          value+=Ec*(Get(H.y,i,j,k)-Get(H.y,i-1,j,k));
+          value-=Ec*(Get(H.x,i,j,k)-Get(H.x,i,j-1,k));
+          Set(E.z,i,j,k,value);
 
-        // source term
-        value=Get(E.x,i,j,k);
-        value-=Jc*Get(J.x,i,j,k);
-        Set(E.x,i,j,k,value);
+          // source term
+          value=Get(E.x,i,j,k);
+          value-=Jc*Get(J.x,i,j,k);
+          Set(E.x,i,j,k,value);
 
-        value=Get(E.y,i,j,k);
-        value-=Jc*Get(J.y,i,j,k);
-        Set(E.y,i,j,k,value);
+          value=Get(E.y,i,j,k);
+          value-=Jc*Get(J.y,i,j,k);
+          Set(E.y,i,j,k,value);
 
-        value=Get(E.z,i,j,k);
-        value-=Jc*Get(J.z,i,j,k);
-        Set(E.z,i,j,k,value);
-
+          value=Get(E.z,i,j,k);
+          value-=Jc*Get(J.z,i,j,k);
+          Set(E.z,i,j,k,value);
+        }
       }
     }
   }
@@ -187,25 +237,71 @@ void timestepH(Tensor E, Tensor H, Tensor J, Constants consts)
       if(i<E.x.size_0-1&&j<E.x.size_1-1&&k<E.x.size_2-1) {
         // index is distance of atleast 1 from outer edge
         double Hc=consts.Hc; // constant value
+        if(i==1){
+          double value;
+          value=Get(H.x,i+1,j,k);
+          Set(H.x,i,j,k,-value);
+          value=Get(H.y,i+1,j,k);
+          Set(H.y,i,j,k,-value);
+          value=Get(H.z,i+1,j,k);
+          Set(H.z,i,j,k,-value);
+        }else if(j==1){
+          double value;
+          value=Get(H.x,i,j+1,k);
+          Set(H.x,i,j,k,-value);
+          value=Get(H.y,i,j+1,k);
+          Set(H.y,i,j,k,-value);
+          value=Get(H.z,i,j+1,k);
+          Set(H.z,i,j,k,-value);
+        }else if(k==1){
+          double value;
+          value=Get(H.x,i,j,k+1);
+          Set(H.x,i,j,k,-value);
+          value=Get(H.y,i,j,k+1);
+          Set(H.y,i,j,k,-value);
+          value=Get(H.z,i,j,k+1);
+          Set(H.z,i,j,k,-value);
+        }else if(i==H.x.size_0-2){
+          double value;
+          value=Get(H.x,i-1,j,k);
+          Set(H.x,i,j,k,-value);
+          value=Get(H.y,i-1,j,k);
+          Set(H.y,i,j,k,-value);
+          value=Get(H.z,i-1,j,k);
+          Set(H.z,i,j,k,-value);
+        }else if(j==H.x.size_1-2){
+          double value;
+          value=Get(H.x,i,j-1,k);
+          Set(H.x,i,j,k,-value);
+          value=Get(H.y,i,j-1,k);
+          Set(H.y,i,j,k,-value);
+          value=Get(H.z,i,j-1,k);
+          Set(H.z,i,j,k,-value);
+        }else if(k==H.x.size_2-2){
+          double value;
+          value=Get(H.x,i,j,k-1);
+          Set(H.x,i,j,k,-value);
+          value=Get(H.y,i,j,k-1);
+          Set(H.y,i,j,k,-value);
+          value=Get(H.z,i,j,k-1);
+          Set(H.z,i,j,k,-value);
+        } else{
+          double value;
+          value=Get(H.x,i,j,k);
+          value+=Hc*(Get(E.y,i,j,k+1)-Get(E.y,i,j,k));
+          value-=Hc*(Get(E.z,i,j+1,k)-Get(E.z,i,j,k));
+          Set(H.x,i,j,k,value);
 
-        double value;
-        value=Get(H.x,i,j,k);
-        value+=Hc*(Get(E.y,i,j,k+1)-Get(E.y,i,j,k));
-        value-=Hc*(Get(E.z,i,j+1,k)-Get(E.z,i,j,k));
-        Set(H.x,i,j,k,value);
+          value=Get(H.y,i,j,k);
+          value+=Hc*(Get(E.z,i+1,j,k)-Get(E.z,i,j,k));
+          value-=Hc*(Get(E.x,i,j,k+1)-Get(E.x,i,j,k));
+          Set(H.y,i,j,k,value);
 
-        value=Get(H.y,i,j,k);
-        value+=Hc*(Get(E.z,i+1,j,k)-Get(E.z,i,j,k));
-        value-=Hc*(Get(E.x,i,j,k+1)-Get(E.x,i,j,k));
-        Set(H.y,i,j,k,value);
-
-        value=Get(H.z,i,j,k);
-        value+=Hc*(Get(E.x,i,j+1,k)-Get(E.x,i,j,k));
-        value-=Hc*(Get(E.y,i+1,j,k)-Get(E.y,i,j,k));
-        Set(H.z,i,j,k,value);
-
-
-
+          value=Get(H.z,i,j,k);
+          value+=Hc*(Get(E.x,i,j+1,k)-Get(E.x,i,j,k));
+          value-=Hc*(Get(E.y,i+1,j,k)-Get(E.y,i,j,k));
+          Set(H.z,i,j,k,value);
+        }
       }
     }
   }

@@ -4,9 +4,9 @@ import numpy as np
 from Cfdtd import FDTD
 
 if __name__=="__main__":
-    N_x=25
-    N_y=25
-    N_z=25
+    N_x=50
+    N_y=50
+    N_z=50
     dx=50e-9
     c=2.998e8
     dt=dx/(2*c)
@@ -25,7 +25,7 @@ if __name__=="__main__":
     for n in range(0,tmax_steps):
 
         # todo: evolve J in cuda, 
-        fdtd.J.z[:,:,:]=np.exp(-(_x-13)**2 / 5)*np.exp(-(_y-13)**2 / 5)*np.exp(-(_z-13)**2 / 5)*np.cos(omega*n*dt)
+        fdtd.J.z[:,:,:]=np.exp(-(_x-25)**2 / 5)*np.exp(-(_y-25)**2 / 5)*np.exp(-(_z-25)**2 / 5)*np.cos(omega*n*dt)*np.exp(-n*dt/(5*dt))
         # fdtd.timestep()
 
         time1=time.time()
