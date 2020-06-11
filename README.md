@@ -6,6 +6,8 @@ in python.
 
 CUDA is used to calculate each point of the computational grid in parrallel on a GPU.
 
+<img src="images/cuda_fdtd.png">
+
 ```
 import matplotlib.pyplot as plt
 import numpy as np
