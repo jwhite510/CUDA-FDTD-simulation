@@ -1,0 +1,2 @@
+* linguist-vendored
+*.cu linguist-vendored=false
