@@ -4,11 +4,12 @@ Finite Difference Time Domain Simulation written in CUDA, with python Bindings.
 All of the CUDA Tensors for the Electric and Magnetic fields are exposed as numpy arrays
 in python.
 
-CUDA is used to calculate each point of the computational grid in parrallel on a GPU.
+CUDA is used to calculate each point of the computational grid in parallel on a GPU.
 
-The FDTD uses a discretized form of maxwell's equations to simulate propagation of a source through vacuum or a material described by a complex refractive index n(x,y,z).  
-<img src="images/fdtd_eqn1.png" width="700" height="200">  
-<img src="images/fdtd_eqn2.png" width="700" height="200">  
+The FDTD uses a discretized form of Maxwell's equations to simulate propagation of a source through vacuum or a material described by a complex refractive index n(x,y,z).  
+## Maxwell's Equations discretized to 3D space
+<img src="images/fdtd_eqn1.png" width="600" height="200">  
+<img src="images/fdtd_eqn2.png" width="600" height="200">  
 The computational process is extremely demanding because the computational grid must be resolved on the order of the wavelength of the EM waves being simulated.  
 <img src="images/cuda_fdtd.png">  
 
